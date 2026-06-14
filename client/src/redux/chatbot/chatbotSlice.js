@@ -1,6 +1,10 @@
 import { createAsyncThunk, createSlice, nanoid } from "@reduxjs/toolkit";
 import { sendChatMessage } from "../../services/chatbotService";
 import { getNearbyDoctors } from "../../services/doctorService";
+import {
+  geocodeAddress as geocodeAddressService,
+  getLocationByIP,
+} from "../../services/locationService";
 
 const initialState = {
   messages: [
@@ -15,12 +19,16 @@ const initialState = {
   location: null,
   locationLabel: "Add location",
   locationError: "",
+  locationSource: "", // "gps" | "manual" | "ip" | ""
   status: "idle",
   error: "",
   doctorSuggestions: [],
   doctorStatus: "idle",
   doctorError: "",
   doctorDepartment: "",
+  geocodeStatus: "idle", // "idle" | "loading" | "succeeded" | "failed"
+  geocodeError: "",
+  ipLocationStatus: "idle", // "idle" | "loading" | "succeeded" | "failed"
 };
 
 export const submitChatMessage = createAsyncThunk(
@@ -49,6 +57,43 @@ export const fetchNearbyDoctors = createAsyncThunk(
   }
 );
 
+/**
+ * Convert a typed address / city name to lat/lng via the server's geocode endpoint.
+ */
+export const geocodeAddress = createAsyncThunk(
+  "chatbot/geocodeAddress",
+  async (address, { rejectWithValue }) => {
+    try {
+      return await geocodeAddressService(address);
+    } catch (error) {
+      const message =
+        error?.response?.data?.message || error.message || "Could not find that location.";
+      return rejectWithValue(message);
+    }
+  }
+);
+
+/**
+ * Silently detect rough location from the user's IP address.
+ * Used as an automatic fallback when GPS is unavailable.
+ */
+export const fetchIPLocation = createAsyncThunk(
+  "chatbot/fetchIPLocation",
+  async (_, { getState, rejectWithValue }) => {
+    // Don't override a more accurate source
+    const { location, locationSource } = getState().chatbot;
+    if (location && (locationSource === "gps" || locationSource === "manual")) {
+      return rejectWithValue("Better location already set.");
+    }
+
+    try {
+      return await getLocationByIP();
+    } catch (error) {
+      return rejectWithValue(error.message || "IP location detection failed.");
+    }
+  }
+);
+
 const chatbotSlice = createSlice({
   name: "chatbot",
   initialState,
@@ -56,6 +101,7 @@ const chatbotSlice = createSlice({
     setLocation(state, action) {
       state.location = action.payload.location;
       state.locationLabel = action.payload.label;
+      state.locationSource = action.payload.source || "gps";
       state.locationError = "";
     },
     setLocationError(state, action) {
@@ -67,9 +113,14 @@ const chatbotSlice = createSlice({
     resetChatError(state) {
       state.error = "";
     },
+    clearGeocodeError(state) {
+      state.geocodeError = "";
+      state.geocodeStatus = "idle";
+    },
   },
   extraReducers: (builder) => {
     builder
+      // ── Chat message ──────────────────────────────────────
       .addCase(submitChatMessage.pending, (state, action) => {
         state.status = "loading";
         state.error = "";
@@ -96,6 +147,8 @@ const chatbotSlice = createSlice({
         state.status = "failed";
         state.error = action.payload || "Something went wrong.";
       })
+
+      // ── Doctor search ─────────────────────────────────────
       .addCase(fetchNearbyDoctors.pending, (state) => {
         state.doctorStatus = "loading";
         state.doctorError = "";
@@ -109,6 +162,48 @@ const chatbotSlice = createSlice({
       .addCase(fetchNearbyDoctors.rejected, (state, action) => {
         state.doctorStatus = "failed";
         state.doctorError = action.payload || "Something went wrong.";
+      })
+
+      // ── Geocode address ───────────────────────────────────
+      .addCase(geocodeAddress.pending, (state) => {
+        state.geocodeStatus = "loading";
+        state.geocodeError = "";
+      })
+      .addCase(geocodeAddress.fulfilled, (state, action) => {
+        state.geocodeStatus = "succeeded";
+        state.geocodeError = "";
+        state.location = {
+          lat: action.payload.lat,
+          lng: action.payload.lng,
+        };
+        state.locationLabel = action.payload.address || "Manual location";
+        state.locationSource = "manual";
+        state.locationError = "";
+      })
+      .addCase(geocodeAddress.rejected, (state, action) => {
+        state.geocodeStatus = "failed";
+        state.geocodeError = action.payload || "Could not find that location.";
+      })
+
+      // ── IP-based location ─────────────────────────────────
+      .addCase(fetchIPLocation.pending, (state) => {
+        state.ipLocationStatus = "loading";
+      })
+      .addCase(fetchIPLocation.fulfilled, (state, action) => {
+        state.ipLocationStatus = "succeeded";
+        state.location = {
+          lat: action.payload.lat,
+          lng: action.payload.lng,
+        };
+        const city = action.payload.city || "";
+        const region = action.payload.region || "";
+        state.locationLabel = [city, region].filter(Boolean).join(", ") || "Detected location";
+        state.locationSource = "ip";
+        state.locationError = "";
+      })
+      .addCase(fetchIPLocation.rejected, (state) => {
+        state.ipLocationStatus = "failed";
+        // Silent failure — don't show error for background IP detection
       });
   },
 });
@@ -118,6 +213,7 @@ export const {
   setLocationError,
   clearLocationError,
   resetChatError,
+  clearGeocodeError,
 } = chatbotSlice.actions;
 
 export default chatbotSlice.reducer;

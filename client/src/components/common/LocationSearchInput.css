@@ -1,0 +1,272 @@
+/* ─── Location Search Input ────────────────────────────────────────────────── */
+
+.lsi-wrapper {
+  position: relative;
+  width: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ─── Input Row ─────────────────────────────────────────────────────────────── */
+
+.lsi-input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0 14px;
+  height: 48px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.lsi-input-row:focus-within {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15), 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.lsi-open .lsi-input-row {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-color: transparent;
+}
+
+.lsi-disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ─── Search icon / spinner ─────────────────────────────────────────────────── */
+
+.lsi-icon-search {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: #94a3b8;
+  width: 18px;
+  height: 18px;
+}
+
+.lsi-icon-search svg {
+  width: 18px;
+  height: 18px;
+}
+
+.lsi-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #e2e8f0;
+  border-top-color: #6366f1;
+  border-radius: 50%;
+  animation: lsi-spin 0.6s linear infinite;
+}
+
+@keyframes lsi-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── Input ─────────────────────────────────────────────────────────────────── */
+
+.lsi-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 15px;
+  color: #1e293b;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+.lsi-input::placeholder {
+  color: #94a3b8;
+}
+
+.lsi-input:disabled {
+  cursor: not-allowed;
+}
+
+/* ─── Clear button ──────────────────────────────────────────────────────────── */
+
+.lsi-btn-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: #f1f5f9;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #64748b;
+  padding: 0;
+  transition: background 0.15s, color 0.15s;
+}
+
+.lsi-btn-clear:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+.lsi-btn-clear svg {
+  width: 11px;
+  height: 11px;
+}
+
+/* ─── Error ─────────────────────────────────────────────────────────────────── */
+
+.lsi-error {
+  font-size: 12px;
+  color: #ef4444;
+  margin: 4px 0 0 4px;
+}
+
+/* ─── Dropdown ──────────────────────────────────────────────────────────────── */
+
+.lsi-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border: 1.5px solid #6366f1;
+  border-top: none;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  box-shadow: 0 12px 32px rgba(99, 102, 241, 0.12), 0 4px 12px rgba(0, 0, 0, 0.08);
+  list-style: none;
+  margin: 0;
+  padding: 6px 0;
+  z-index: 9999;
+  max-height: 320px;
+  overflow-y: auto;
+  animation: lsi-slide-down 0.15s ease;
+}
+
+@keyframes lsi-slide-down {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.lsi-dropdown::-webkit-scrollbar {
+  width: 5px;
+}
+.lsi-dropdown::-webkit-scrollbar-track {
+  background: transparent;
+}
+.lsi-dropdown::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 4px;
+}
+
+/* ─── Dropdown option ───────────────────────────────────────────────────────── */
+
+.lsi-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background 0.12s;
+  border-bottom: 1px solid #f8fafc;
+}
+
+.lsi-option:last-child {
+  border-bottom: none;
+}
+
+.lsi-option:hover,
+.lsi-option--active {
+  background: linear-gradient(90deg, #f0f0ff 0%, #f8f8ff 100%);
+}
+
+.lsi-option-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  width: 26px;
+  text-align: center;
+}
+
+.lsi-option-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lsi-option-main {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lsi-option-sub {
+  font-size: 11.5px;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lsi-option-arrow {
+  font-size: 18px;
+  color: #cbd5e1;
+  flex-shrink: 0;
+  transition: color 0.12s, transform 0.12s;
+}
+
+.lsi-option:hover .lsi-option-arrow,
+.lsi-option--active .lsi-option-arrow {
+  color: #6366f1;
+  transform: translateX(2px);
+}
+
+/* ─── Dark mode ─────────────────────────────────────────────────────────────── */
+
+@media (prefers-color-scheme: dark) {
+  .lsi-input-row {
+    background: #1e293b;
+    border-color: #334155;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  }
+  .lsi-input-row:focus-within {
+    border-color: #818cf8;
+    box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.2);
+  }
+  .lsi-input {
+    color: #f1f5f9;
+  }
+  .lsi-input::placeholder {
+    color: #475569;
+  }
+  .lsi-dropdown {
+    background: #1e293b;
+    border-color: #818cf8;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+  }
+  .lsi-option {
+    border-bottom-color: #0f172a;
+  }
+  .lsi-option:hover,
+  .lsi-option--active {
+    background: linear-gradient(90deg, #1e1b4b 0%, #1e293b 100%);
+  }
+  .lsi-option-main {
+    color: #f1f5f9;
+  }
+  .lsi-btn-clear {
+    background: #334155;
+    color: #94a3b8;
+  }
+  .lsi-btn-clear:hover {
+    background: #475569;
+    color: #f1f5f9;
+  }
+}
