@@ -1,0 +1,166 @@
+{
+  "common": {
+    "next": "आगे बढ़ें",
+    "continue": "जारी रखें",
+    "explore": "एक्सप्लोर करें"
+  },
+  "splash": {
+    "tagline": "आपका स्वास्थ्य, हमारी प्राथमिकता",
+    "badgeAiPowered": "एआई संचालित",
+    "badgeTrusted": "विश्वसनीय",
+    "badgeSecure": "सुरक्षित",
+    "companion": "आपका व्यक्तिगत स्वास्थ्य साथी",
+    "availability": "24/7 आपके साथ"
+  },
+  "language": {
+    "title": "अपनी\nपसंदीदा भाषा चुनें",
+    "subtitle": "हम आपकी भाषा में आपकी देखभाल करेंगे"
+  },
+  "careType": {
+    "title": "आप किस प्रकार की\nदेखभाल की तलाश में हैं?",
+    "subtitle": "अपने लिए सबसे उपयुक्त विकल्प चुनें",
+    "personal": {
+      "title": "व्यक्तिगत देखभाल",
+      "subtitle": "अपने लिए देखभाल"
+    },
+    "family": {
+      "title": "पारिवारिक देखभाल",
+      "subtitle": "परिवार के स्वास्थ्य का प्रबंधन करें"
+    },
+    "women": {
+      "title": "महिला स्वास्थ्य",
+      "subtitle": "महिलाओं का स्वास्थ्य और कल्याण"
+    },
+    "elder": {
+      "title": "बुजुर्ग देखभाल",
+      "subtitle": "माता-पिता/बुजुर्गों की देखभाल"
+    }
+  },
+  "permissions": {
+    "title": "बेहतर देखभाल के लिए\nअनुमतियां दें",
+    "subtitle": "आपकी निजता हमारी प्राथमिकता है",
+    "location": {
+      "title": "लोकेशन एक्सेस",
+      "subtitle": "आस-पास के डॉक्टर और अस्पताल खोजें"
+    },
+    "camera": {
+      "title": "कैमरा एक्सेस",
+      "subtitle": "पर्चे और रिपोर्ट अपलोड करें"
+    },
+    "notifications": {
+      "title": "सूचना एक्सेस",
+      "subtitle": "दवा अनुस्मारक और अपडेट"
+    },
+    "microphone": {
+      "title": "माइक्रोफ़ोन एक्सेस",
+      "subtitle": "आवाज़ खोज और एआई सहायक"
+    }
+  },
+  "auth": {
+    "google": "Google से जारी रखें",
+    "apple": "Apple से जारी रखें",
+    "appleComingSoon": "Apple साइन-इन जल्द ही आ रहा है।",
+    "login": {
+      "title": "वापसी पर स्वागत है!",
+      "subtitle": "जारी रखने के लिए लॉगिन करें",
+      "emailLabel": "ईमेल पता",
+      "emailPlaceholder": "you@example.com",
+      "passwordLabel": "पासवर्ड",
+      "passwordPlaceholder": "अपना पासवर्ड डालें",
+      "forgotPassword": "पासवर्ड भूल गए?",
+      "submit": "लॉगिन करें",
+      "or": "या",
+      "otp": "OTP से लॉगिन करें",
+      "otpComingSoon": "OTP लॉगिन जल्द ही आ रहा है।",
+      "newHere": "नए हैं?",
+      "createAccount": "खाता बनाएं"
+    },
+    "signup": {
+      "title": "खाता बनाएं",
+      "subtitle": "बेहतर देखभाल के लिए Cureliynk से जुड़ें",
+      "nameLabel": "पूरा नाम",
+      "namePlaceholder": "जॉन डो",
+      "emailLabel": "ईमेल पता",
+      "emailPlaceholder": "you@example.com",
+      "phoneLabel": "मोबाइल नंबर (वैकल्पिक)",
+      "phonePlaceholder": "98765 43210",
+      "passwordLabel": "पासवर्ड",
+      "passwordPlaceholder": "एक पासवर्ड बनाएं",
+      "submit": "खाता बनाएं",
+      "alreadyHaveAccount": "पहले से खाता है?",
+      "login": "लॉगिन करें"
+    }
+  },
+  "dashboard": {
+    "greeting": {
+      "morning": "सुप्रभात, {{name}}!",
+      "afternoon": "नमस्ते, {{name}}!",
+      "evening": "शुभ संध्या, {{name}}!",
+      "subtitle": "आज आप कैसा महसूस कर रहे हैं?"
+    },
+    "disclaimer": {
+      "title": "महत्वपूर्ण स्वास्थ्य सूचना",
+      "text": "Cureliynk निदान, दवा नहीं लिखता या दवाएं प्रदान नहीं करता। एआई द्वारा दी गई जानकारी में त्रुटियां हो सकती हैं और यह पेशेवर चिकित्सा सलाह का विकल्प नहीं है।"
+    },
+    "askAi": {
+      "cardTitle": "एआई से पूछें",
+      "cardSubtitle": "स्वास्थ्य, लक्षण, दवाओं और उपचार के बारे में कुछ भी पूछें।",
+      "cta": "एआई से चैट करें"
+    },
+    "pregnancyCare": {
+      "title": "गर्भावस्था देखभाल",
+      "subtitle": "मां और शिशु के लिए संपूर्ण देखभाल"
+    },
+    "babyCareDoctors": {
+      "title": "शिशु देखभाल डॉक्टर",
+      "subtitle": "अपने शिशु के लिए भरोसेमंद डॉक्टर खोजें"
+    },
+    "emergency": {
+      "title": "आपातकालीन सहायता",
+      "subtitle": "किसी भी आपातकाल में तुरंत सहायता पाएं",
+      "callNow": "अभी कॉल करें",
+      "firstAidGuide": "प्राथमिक चिकित्सा गाइड"
+    },
+    "nearbyCare": {
+      "title": "आपके पास के डॉक्टर और अस्पताल",
+      "findDoctors": "डॉक्टर खोजें",
+      "findDoctorsSubtitle": "विशेषज्ञता, स्थान और अनुभव के आधार पर खोजें",
+      "findHospitals": "अस्पताल खोजें",
+      "findHospitalsSubtitle": "विवरण और दिशा-निर्देशों के साथ नज़दीकी अस्पताल"
+    },
+    "healthReminder": {
+      "title": "आज का स्वास्थ्य अनुस्मारक",
+      "emptyMessage": "अभी तक कोई अनुस्मारक सेट नहीं किया गया है।"
+    },
+    "features": {
+      "medicineReminder": { "title": "दवा अनुस्मारक" },
+      "labsNearMe": { "title": "नज़दीकी लैब" },
+      "healthInsurance": { "title": "स्वास्थ्य बीमा" }
+    },
+    "upcomingMedicine": {
+      "title": "आगामी दवा",
+      "emptyMessage": "अभी तक कोई आगामी दवा नहीं है।"
+    },
+    "comingSoon": {
+      "genericMessage": "यह सुविधा जल्द ही आ रही है। हम इस पर काम कर रहे हैं।"
+    },
+    "doctorsResults": {
+      "loading": "आपके पास की देखभाल खोजी जा रही है...",
+      "emptyResults": "आस-पास कोई परिणाम नहीं मिला। बाद में फिर से प्रयास करें।",
+      "locationDeniedTitle": "लोकेशन एक्सेस आवश्यक है",
+      "locationDeniedMessage": "आपके पास की देखभाल खोजने के लिए सेटिंग्स में लोकेशन एक्सेस चालू करें।",
+      "openSettings": "सेटिंग्स खोलें",
+      "tryAgain": "फिर से प्रयास करें",
+      "genericError": "कुछ गलत हो गया। कृपया फिर से प्रयास करें।",
+      "distanceAway": "{{distance}} किमी दूर",
+      "reviewsCount": "({{count}} समीक्षाएं)"
+    },
+    "more": {
+      "title": "अधिक",
+      "logout": "लॉग आउट",
+      "cancel": "रद्द करें",
+      "logoutConfirmTitle": "लॉग आउट",
+      "logoutConfirmMessage": "क्या आप वाकई लॉग आउट करना चाहते हैं?"
+    }
+  }
+}

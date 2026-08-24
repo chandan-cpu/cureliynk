@@ -1,0 +1,166 @@
+{
+  "common": {
+    "next": "পরবর্তী",
+    "continue": "চালিয়ে যান",
+    "explore": "এক্সপ্লোর করুন"
+  },
+  "splash": {
+    "tagline": "আপনার স্বাস্থ্য, আমাদের অগ্রাধিকার",
+    "badgeAiPowered": "এআই চালিত",
+    "badgeTrusted": "বিশ্বস্ত",
+    "badgeSecure": "সুরক্ষিত",
+    "companion": "আপনার ব্যক্তিগত স্বাস্থ্য সঙ্গী",
+    "availability": "24/7 আপনার পাশে"
+  },
+  "language": {
+    "title": "আপনার\nপছন্দের ভাষা বেছে নিন",
+    "subtitle": "আমরা আপনার ভাষায় আপনার যত্ন নেব"
+  },
+  "careType": {
+    "title": "আপনি কোন ধরনের\nযত্ন খুঁজছেন?",
+    "subtitle": "আপনার জন্য সবচেয়ে উপযুক্ত বিকল্পটি বেছে নিন",
+    "personal": {
+      "title": "ব্যক্তিগত যত্ন",
+      "subtitle": "নিজের জন্য যত্ন"
+    },
+    "family": {
+      "title": "পারিবারিক যত্ন",
+      "subtitle": "পরিবারের স্বাস্থ্য পরিচালনা করুন"
+    },
+    "women": {
+      "title": "নারী সুস্থতা",
+      "subtitle": "নারীর স্বাস্থ্য ও সুস্থতা"
+    },
+    "elder": {
+      "title": "প্রবীণ যত্ন",
+      "subtitle": "বাবা-মা/প্রবীণদের যত্ন"
+    }
+  },
+  "permissions": {
+    "title": "আরও ভালো যত্নের জন্য\nঅনুমতি দিন",
+    "subtitle": "আপনার গোপনীয়তা আমাদের অগ্রাধিকার",
+    "location": {
+      "title": "লোকেশন অ্যাক্সেস",
+      "subtitle": "কাছাকাছি ডাক্তার ও হাসপাতাল খুঁজুন"
+    },
+    "camera": {
+      "title": "ক্যামেরা অ্যাক্সেস",
+      "subtitle": "প্রেসক্রিপশন ও রিপোর্ট আপলোড করুন"
+    },
+    "notifications": {
+      "title": "নোটিফিকেশন অ্যাক্সেস",
+      "subtitle": "ওষুধের রিমাইন্ডার ও আপডেট"
+    },
+    "microphone": {
+      "title": "মাইক্রোফোন অ্যাক্সেস",
+      "subtitle": "ভয়েস সার্চ ও এআই সহকারী"
+    }
+  },
+  "auth": {
+    "google": "Google দিয়ে চালিয়ে যান",
+    "apple": "Apple দিয়ে চালিয়ে যান",
+    "appleComingSoon": "Apple সাইন-ইন শীঘ্রই আসছে।",
+    "login": {
+      "title": "ফিরে আসার জন্য স্বাগতম!",
+      "subtitle": "চালিয়ে যেতে লগইন করুন",
+      "emailLabel": "ইমেইল ঠিকানা",
+      "emailPlaceholder": "you@example.com",
+      "passwordLabel": "পাসওয়ার্ড",
+      "passwordPlaceholder": "আপনার পাসওয়ার্ড লিখুন",
+      "forgotPassword": "পাসওয়ার্ড ভুলে গেছেন?",
+      "submit": "লগইন করুন",
+      "or": "অথবা",
+      "otp": "OTP দিয়ে লগইন করুন",
+      "otpComingSoon": "OTP লগইন শীঘ্রই আসছে।",
+      "newHere": "নতুন এখানে?",
+      "createAccount": "অ্যাকাউন্ট তৈরি করুন"
+    },
+    "signup": {
+      "title": "অ্যাকাউন্ট তৈরি করুন",
+      "subtitle": "ভালো যত্নের জন্য Cureliynk-এ যোগ দিন",
+      "nameLabel": "পুরো নাম",
+      "namePlaceholder": "জন ডো",
+      "emailLabel": "ইমেইল ঠিকানা",
+      "emailPlaceholder": "you@example.com",
+      "phoneLabel": "মোবাইল নম্বর (ঐচ্ছিক)",
+      "phonePlaceholder": "98765 43210",
+      "passwordLabel": "পাসওয়ার্ড",
+      "passwordPlaceholder": "একটি পাসওয়ার্ড তৈরি করুন",
+      "submit": "অ্যাকাউন্ট তৈরি করুন",
+      "alreadyHaveAccount": "ইতিমধ্যে অ্যাকাউন্ট আছে?",
+      "login": "লগইন করুন"
+    }
+  },
+  "dashboard": {
+    "greeting": {
+      "morning": "শুভ সকাল, {{name}}!",
+      "afternoon": "শুভ অপরাহ্ন, {{name}}!",
+      "evening": "শুভ সন্ধ্যা, {{name}}!",
+      "subtitle": "আজ আপনার শরীর কেমন লাগছে?"
+    },
+    "disclaimer": {
+      "title": "গুরুত্বপূর্ণ স্বাস্থ্য বিজ্ঞপ্তি",
+      "text": "Cureliynk রোগ নির্ণয়, ওষুধ লেখা বা ওষুধ সরবরাহ করে না। এআই-জেনারেটেড তথ্যে ভুল থাকতে পারে এবং এটি পেশাদার চিকিৎসা পরামর্শের বিকল্প নয়।"
+    },
+    "askAi": {
+      "cardTitle": "এআই-কে জিজ্ঞাসা করুন",
+      "cardSubtitle": "স্বাস্থ্য, উপসর্গ, ওষুধ ও চিকিৎসা সম্পর্কে যেকোনো কিছু জিজ্ঞাসা করুন।",
+      "cta": "এআই-এর সাথে চ্যাট করুন"
+    },
+    "pregnancyCare": {
+      "title": "গর্ভাবস্থা যত্ন",
+      "subtitle": "মা ও শিশুর জন্য সম্পূর্ণ যত্ন"
+    },
+    "babyCareDoctors": {
+      "title": "শিশু যত্ন ডাক্তার",
+      "subtitle": "আপনার শিশুর জন্য বিশ্বস্ত ডাক্তার খুঁজুন"
+    },
+    "emergency": {
+      "title": "জরুরি সহায়তা",
+      "subtitle": "যেকোনো জরুরি অবস্থায় তাৎক্ষণিক সহায়তা পান",
+      "callNow": "এখনই কল করুন",
+      "firstAidGuide": "প্রাথমিক চিকিৎসা গাইড"
+    },
+    "nearbyCare": {
+      "title": "আপনার কাছাকাছি ডাক্তার ও হাসপাতাল",
+      "findDoctors": "ডাক্তার খুঁজুন",
+      "findDoctorsSubtitle": "বিশেষত্ব, অবস্থান ও অভিজ্ঞতা অনুযায়ী খুঁজুন",
+      "findHospitals": "হাসপাতাল খুঁজুন",
+      "findHospitalsSubtitle": "বিস্তারিত ও দিকনির্দেশনাসহ কাছাকাছি হাসপাতাল"
+    },
+    "healthReminder": {
+      "title": "আজকের স্বাস্থ্য রিমাইন্ডার",
+      "emptyMessage": "এখনো কোনো রিমাইন্ডার সেট করা হয়নি।"
+    },
+    "features": {
+      "medicineReminder": { "title": "ওষুধের রিমাইন্ডার" },
+      "labsNearMe": { "title": "কাছাকাছি ল্যাব" },
+      "healthInsurance": { "title": "স্বাস্থ্য বীমা" }
+    },
+    "upcomingMedicine": {
+      "title": "আসন্ন ওষুধ",
+      "emptyMessage": "এখনো কোনো আসন্ন ওষুধ নেই।"
+    },
+    "comingSoon": {
+      "genericMessage": "এই ফিচারটি শীঘ্রই আসছে। আমরা এটি নিয়ে কাজ করছি।"
+    },
+    "doctorsResults": {
+      "loading": "আপনার কাছাকাছি সেবা খোঁজা হচ্ছে...",
+      "emptyResults": "কাছাকাছি কোনো ফলাফল পাওয়া যায়নি। পরে আবার চেষ্টা করুন।",
+      "locationDeniedTitle": "লোকেশন অ্যাক্সেস প্রয়োজন",
+      "locationDeniedMessage": "আপনার কাছাকাছি সেবা খুঁজতে সেটিংসে লোকেশন অ্যাক্সেস চালু করুন।",
+      "openSettings": "সেটিংস খুলুন",
+      "tryAgain": "আবার চেষ্টা করুন",
+      "genericError": "কিছু ভুল হয়েছে। আবার চেষ্টা করুন।",
+      "distanceAway": "{{distance}} কিমি দূরে",
+      "reviewsCount": "({{count}}টি রিভিউ)"
+    },
+    "more": {
+      "title": "আরও",
+      "logout": "লগ আউট",
+      "cancel": "বাতিল",
+      "logoutConfirmTitle": "লগ আউট",
+      "logoutConfirmMessage": "আপনি কি নিশ্চিত যে লগ আউট করতে চান?"
+    }
+  }
+}

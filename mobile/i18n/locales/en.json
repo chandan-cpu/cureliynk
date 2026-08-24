@@ -1,0 +1,166 @@
+{
+  "common": {
+    "next": "Next",
+    "continue": "Continue",
+    "explore": "Explore"
+  },
+  "splash": {
+    "tagline": "Your Health, Our Priority",
+    "badgeAiPowered": "AI Powered",
+    "badgeTrusted": "Trusted",
+    "badgeSecure": "Secure",
+    "companion": "Your personal health companion",
+    "availability": "24/7 by your side"
+  },
+  "language": {
+    "title": "Choose Your\nPreferred Language",
+    "subtitle": "We will care for you in your language"
+  },
+  "careType": {
+    "title": "What type of care\nare you looking for?",
+    "subtitle": "Select the option that suits you best",
+    "personal": {
+      "title": "Personal Care",
+      "subtitle": "Care for myself"
+    },
+    "family": {
+      "title": "Family Care",
+      "subtitle": "Manage family health"
+    },
+    "women": {
+      "title": "Women Wellness",
+      "subtitle": "Women health & wellness"
+    },
+    "elder": {
+      "title": "Elder Care",
+      "subtitle": "Care for parents / elders"
+    }
+  },
+  "permissions": {
+    "title": "Allow Permissions\nto provide better care",
+    "subtitle": "Your privacy is our priority",
+    "location": {
+      "title": "Location Access",
+      "subtitle": "Find nearby doctors & hospitals"
+    },
+    "camera": {
+      "title": "Camera Access",
+      "subtitle": "Upload prescriptions & reports"
+    },
+    "notifications": {
+      "title": "Notification Access",
+      "subtitle": "Medicine reminders & updates"
+    },
+    "microphone": {
+      "title": "Microphone Access",
+      "subtitle": "Voice search & AI assistant"
+    }
+  },
+  "auth": {
+    "google": "Continue with Google",
+    "apple": "Continue with Apple",
+    "appleComingSoon": "Apple sign-in is coming soon.",
+    "login": {
+      "title": "Welcome Back!",
+      "subtitle": "Login to continue",
+      "emailLabel": "Email Address",
+      "emailPlaceholder": "you@example.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "forgotPassword": "Forgot Password?",
+      "submit": "Login",
+      "or": "or",
+      "otp": "Login with OTP",
+      "otpComingSoon": "OTP login is coming soon.",
+      "newHere": "New here?",
+      "createAccount": "Create an Account"
+    },
+    "signup": {
+      "title": "Create Account",
+      "subtitle": "Join Cureliynk for better care",
+      "nameLabel": "Full Name",
+      "namePlaceholder": "John Doe",
+      "emailLabel": "Email Address",
+      "emailPlaceholder": "you@example.com",
+      "phoneLabel": "Mobile Number (optional)",
+      "phonePlaceholder": "98765 43210",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Create a password",
+      "submit": "Create Account",
+      "alreadyHaveAccount": "Already have an account?",
+      "login": "Login"
+    }
+  },
+  "dashboard": {
+    "greeting": {
+      "morning": "Good Morning, {{name}}!",
+      "afternoon": "Good Afternoon, {{name}}!",
+      "evening": "Good Evening, {{name}}!",
+      "subtitle": "How are you feeling today?"
+    },
+    "disclaimer": {
+      "title": "Important Health Disclaimer",
+      "text": "Cureliynk does not diagnose, prescribe, or provide medicines. AI-generated information may contain errors and must not replace professional medical advice."
+    },
+    "askAi": {
+      "cardTitle": "Ask AI",
+      "cardSubtitle": "Ask anything about health, symptoms, medicines, and treatments.",
+      "cta": "Chat with AI"
+    },
+    "pregnancyCare": {
+      "title": "Pregnancy Care",
+      "subtitle": "Complete care for Mom & Baby"
+    },
+    "babyCareDoctors": {
+      "title": "Baby Care Doctors",
+      "subtitle": "Find trusted doctors for your baby"
+    },
+    "emergency": {
+      "title": "Emergency Help",
+      "subtitle": "Get help immediately in any emergency",
+      "callNow": "Call Now",
+      "firstAidGuide": "First Aid Guide"
+    },
+    "nearbyCare": {
+      "title": "Doctors & Hospitals Near You",
+      "findDoctors": "Find Doctors",
+      "findDoctorsSubtitle": "Search by speciality, location & experience",
+      "findHospitals": "Find Hospitals",
+      "findHospitalsSubtitle": "Nearby hospitals with details & directions"
+    },
+    "healthReminder": {
+      "title": "Today's Health Reminder",
+      "emptyMessage": "No reminders set yet."
+    },
+    "features": {
+      "medicineReminder": { "title": "Medicine Reminder" },
+      "labsNearMe": { "title": "Labs Near Me" },
+      "healthInsurance": { "title": "Health Insurance" }
+    },
+    "upcomingMedicine": {
+      "title": "Upcoming Medicine",
+      "emptyMessage": "No upcoming medicines yet."
+    },
+    "comingSoon": {
+      "genericMessage": "This feature is coming soon. We're working on it."
+    },
+    "doctorsResults": {
+      "loading": "Finding nearby care...",
+      "emptyResults": "No results found nearby. Try again later.",
+      "locationDeniedTitle": "Location Access Needed",
+      "locationDeniedMessage": "Turn on location access in Settings so we can find care near you.",
+      "openSettings": "Open Settings",
+      "tryAgain": "Try Again",
+      "genericError": "Something went wrong. Please try again.",
+      "distanceAway": "{{distance}} km away",
+      "reviewsCount": "({{count}} reviews)"
+    },
+    "more": {
+      "title": "More",
+      "logout": "Log Out",
+      "cancel": "Cancel",
+      "logoutConfirmTitle": "Log Out",
+      "logoutConfirmMessage": "Are you sure you want to log out?"
+    }
+  }
+}

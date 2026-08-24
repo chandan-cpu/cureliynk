@@ -1,0 +1,166 @@
+{
+  "common": {
+    "next": "পৰৱৰ্তী",
+    "continue": "অব্যাহত ৰাখক",
+    "explore": "এক্সপ্ল'ৰ কৰক"
+  },
+  "splash": {
+    "tagline": "আপোনাৰ স্বাস্থ্য, আমাৰ অগ্ৰাধিকাৰ",
+    "badgeAiPowered": "এআই চালিত",
+    "badgeTrusted": "বিশ্বাসযোগ্য",
+    "badgeSecure": "সুৰক্ষিত",
+    "companion": "আপোনাৰ ব্যক্তিগত স্বাস্থ্য সংগী",
+    "availability": "24/7 আপোনাৰ কাষত"
+  },
+  "language": {
+    "title": "আপোনাৰ\nপছন্দৰ ভাষা বাছক",
+    "subtitle": "আমি আপোনাৰ ভাষাত আপোনাৰ যত্ন ল'ম"
+  },
+  "careType": {
+    "title": "আপুনি কি ধৰণৰ\nযত্ন বিচাৰিছে?",
+    "subtitle": "আপোনাৰ বাবে আটাইতকৈ উপযুক্ত বিকল্প বাছক",
+    "personal": {
+      "title": "ব্যক্তিগত যত্ন",
+      "subtitle": "নিজৰ বাবে যত্ন"
+    },
+    "family": {
+      "title": "পাৰিয়াল যত্ন",
+      "subtitle": "পৰিয়ালৰ স্বাস্থ্য পৰিচালনা কৰক"
+    },
+    "women": {
+      "title": "মহিলা সুস্থতা",
+      "subtitle": "মহিলাৰ স্বাস্থ্য আৰু সুস্থতা"
+    },
+    "elder": {
+      "title": "বৃদ্ধ যত্ন",
+      "subtitle": "মাক-দেউতাক/বৃদ্ধসকলৰ যত্ন"
+    }
+  },
+  "permissions": {
+    "title": "উন্নত সেৱাৰ বাবে\nঅনুমতি দিয়ক",
+    "subtitle": "আপোনাৰ গোপনীয়তা আমাৰ অগ্ৰাধিকাৰ",
+    "location": {
+      "title": "অৱস্থান এক্সেছ",
+      "subtitle": "ওচৰৰ চিকিৎসক আৰু চিকিৎসালয় বিচাৰক"
+    },
+    "camera": {
+      "title": "কেমেৰা এক্সেছ",
+      "subtitle": "চিকিৎসাৰ কাগজপত্ৰ আপল'ড কৰক"
+    },
+    "notifications": {
+      "title": "জাননী এক্সেছ",
+      "subtitle": "ঔষধৰ ৰিমাইণ্ডাৰ আৰু আপডেট"
+    },
+    "microphone": {
+      "title": "মাইক্ৰ'ফ'ন এক্সেছ",
+      "subtitle": "কণ্ঠস্বৰ সন্ধান আৰু এআই সহায়ক"
+    }
+  },
+  "auth": {
+    "google": "Google ৰে অব্যাহত ৰাখক",
+    "apple": "Apple ৰে অব্যাহত ৰাখক",
+    "appleComingSoon": "Apple ছাইন-ইন সোনকালেই আহিব।",
+    "login": {
+      "title": "পুনৰ স্বাগতম!",
+      "subtitle": "অব্যাহত ৰাখিবলৈ লগইন কৰক",
+      "emailLabel": "ইমেইল ঠিকনা",
+      "emailPlaceholder": "you@example.com",
+      "passwordLabel": "পাছৱৰ্ড",
+      "passwordPlaceholder": "আপোনাৰ পাছৱৰ্ড দিয়ক",
+      "forgotPassword": "পাছৱৰ্ড পাহৰিছে?",
+      "submit": "লগইন কৰক",
+      "or": "বা",
+      "otp": "OTP ৰে লগইন কৰক",
+      "otpComingSoon": "OTP লগইন সোনকালেই আহিব।",
+      "newHere": "নতুন?",
+      "createAccount": "একাউণ্ট তৈয়াৰ কৰক"
+    },
+    "signup": {
+      "title": "একাউণ্ট তৈয়াৰ কৰক",
+      "subtitle": "উন্নত সেৱাৰ বাবে Cureliynk-ৰ সৈতে যোগদান কৰক",
+      "nameLabel": "সম্পূৰ্ণ নাম",
+      "namePlaceholder": "জন ডো",
+      "emailLabel": "ইমেইল ঠিকনা",
+      "emailPlaceholder": "you@example.com",
+      "phoneLabel": "মোবাইল নম্বৰ (বৈকল্পিক)",
+      "phonePlaceholder": "98765 43210",
+      "passwordLabel": "পাছৱৰ্ড",
+      "passwordPlaceholder": "এটা পাছৱৰ্ড তৈয়াৰ কৰক",
+      "submit": "একাউণ্ট তৈয়াৰ কৰক",
+      "alreadyHaveAccount": "ইতিমধ্যে একাউণ্ট আছে?",
+      "login": "লগইন কৰক"
+    }
+  },
+  "dashboard": {
+    "greeting": {
+      "morning": "শুভ ৰাতিপুৱা, {{name}}!",
+      "afternoon": "শুভ অপৰাহ্ণ, {{name}}!",
+      "evening": "শুভ সন্ধিয়া, {{name}}!",
+      "subtitle": "আজি আপুনি কেনে অনুভৱ কৰিছে?"
+    },
+    "disclaimer": {
+      "title": "গুৰুত্বপূৰ্ণ স্বাস্থ্য সূচনা",
+      "text": "Cureliynk-এ ৰোগ নিৰ্ণয়, ঔষধ লিখা বা ঔষধ যোগান নধৰে। এআই-এ দিয়া তথ্যত ভুল থাকিব পাৰে আৰু ই পেছাদাৰী চিকিৎসা পৰামৰ্শৰ বিকল্প নহয়।"
+    },
+    "askAi": {
+      "cardTitle": "এআইক সোধক",
+      "cardSubtitle": "স্বাস্থ্য, লক্ষণ, ঔষধ আৰু চিকিৎসাৰ বিষয়ে যিকোনো প্ৰশ্ন সোধক।",
+      "cta": "এআইৰ সৈতে চেট কৰক"
+    },
+    "pregnancyCare": {
+      "title": "গৰ্ভাৱস্থা যত্ন",
+      "subtitle": "মাক আৰু শিশুৰ বাবে সম্পূৰ্ণ যত্ন"
+    },
+    "babyCareDoctors": {
+      "title": "শিশু যত্ন চিকিৎসক",
+      "subtitle": "আপোনাৰ শিশুৰ বাবে বিশ্বাসযোগ্য চিকিৎসক বিচাৰক"
+    },
+    "emergency": {
+      "title": "জৰুৰীকালীন সহায়",
+      "subtitle": "যিকোনো জৰুৰীকালীন অৱস্থাত তৎক্ষণাৎ সহায় পাওক",
+      "callNow": "এতিয়াই কল কৰক",
+      "firstAidGuide": "প্ৰাথমিক চিকিৎসা গাইড"
+    },
+    "nearbyCare": {
+      "title": "আপোনাৰ ওচৰৰ চিকিৎসক আৰু চিকিৎসালয়",
+      "findDoctors": "চিকিৎসক বিচাৰক",
+      "findDoctorsSubtitle": "বিশেষজ্ঞতা, স্থান আৰু অভিজ্ঞতাৰ ওপৰত ভিত্তি কৰি বিচাৰক",
+      "findHospitals": "চিকিৎসালয় বিচাৰক",
+      "findHospitalsSubtitle": "বিৱৰণ আৰু দিশনিৰ্দেশনাসহ ওচৰৰ চিকিৎসালয়"
+    },
+    "healthReminder": {
+      "title": "আজিৰ স্বাস্থ্য ৰিমাইণ্ডাৰ",
+      "emptyMessage": "এতিয়ালৈকে কোনো ৰিমাইণ্ডাৰ ছেট কৰা হোৱা নাই।"
+    },
+    "features": {
+      "medicineReminder": { "title": "ঔষধ ৰিমাইণ্ডাৰ" },
+      "labsNearMe": { "title": "ওচৰৰ লেব" },
+      "healthInsurance": { "title": "স্বাস্থ্য বীমা" }
+    },
+    "upcomingMedicine": {
+      "title": "আগন্তুক ঔষধ",
+      "emptyMessage": "এতিয়ালৈকে কোনো আগন্তুক ঔষধ নাই।"
+    },
+    "comingSoon": {
+      "genericMessage": "এই সুবিধাটো সোনকালেই আহিব। আমি ইয়াৰ ওপৰত কাম কৰি আছোঁ।"
+    },
+    "doctorsResults": {
+      "loading": "আপোনাৰ ওচৰৰ সেৱা বিচাৰি থকা হৈছে...",
+      "emptyResults": "ওচৰত কোনো ফলাফল পোৱা নগ'ল। পাছত পুনৰ চেষ্টা কৰক।",
+      "locationDeniedTitle": "অৱস্থান এক্সেছৰ প্ৰয়োজন",
+      "locationDeniedMessage": "আপোনাৰ ওচৰৰ সেৱা বিচাৰিবলৈ ছেটিংছত অৱস্থান এক্সেছ অন কৰক।",
+      "openSettings": "ছেটিংছ খোলক",
+      "tryAgain": "পুনৰ চেষ্টা কৰক",
+      "genericError": "কিবা এটা ভুল হ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+      "distanceAway": "{{distance}} কিমি দূৰত",
+      "reviewsCount": "({{count}}টা ৰিভিউ)"
+    },
+    "more": {
+      "title": "অধিক",
+      "logout": "লগ আউট",
+      "cancel": "বাতিল কৰক",
+      "logoutConfirmTitle": "লগ আউট",
+      "logoutConfirmMessage": "আপুনি নিশ্চিতনে লগ আউট কৰিব বিচাৰে?"
+    }
+  }
+}
