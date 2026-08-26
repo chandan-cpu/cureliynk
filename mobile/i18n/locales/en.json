@@ -92,6 +92,10 @@
     }
   },
   "dashboard": {
+    "hero": {
+      "askAi": { "title": "Your AI Health Assistant", "subtitle": "Get instant answers to your health questions" },
+      "pregnancy": { "title": "Complete Pregnancy Care", "subtitle": "Expert guidance for every step of your journey" }
+    },
     "greeting": {
       "morning": "Good Morning, {{name}}!",
       "afternoon": "Good Afternoon, {{name}}!",

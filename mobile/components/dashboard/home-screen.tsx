@@ -8,6 +8,7 @@ import { DisclaimerBanner } from "@/components/dashboard/disclaimer-banner";
 import { EmergencyHelpRow } from "@/components/dashboard/emergency-help-row";
 import { FeatureTileRow } from "@/components/dashboard/feature-tile-row";
 import { GreetingHeader } from "@/components/dashboard/greeting-header";
+import { HeroCarousel } from "@/components/dashboard/hero-carousel";
 import { HealthReminderCard } from "@/components/dashboard/health-reminder-card";
 import { NearbyCareSection } from "@/components/dashboard/nearby-care-section";
 import { PregnancyCareCard } from "@/components/dashboard/pregnancy-care-card";
@@ -19,6 +20,7 @@ export function HomeScreen() {
       <StatusBar style="dark" />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24 }}>
         <GreetingHeader />
+        <HeroCarousel />
         <DisclaimerBanner />
         <AskAiCard />
 

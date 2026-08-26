@@ -30,8 +30,7 @@ export function PregnancyCareCard() {
       />
       <View className="bg-white p-3.5">
         <View className="flex-row items-center gap-1.5">
-          <Ionicons name="heart" size={16} color="#DB2777" />
-          <Text className="text-slate-900 text-sm font-bold">{t("dashboard.pregnancyCare.title")}</Text>
+          <Text className="text-slate-900 font-bold">{t("dashboard.pregnancyCare.title")}</Text>
         </View>
         <Text className="text-slate-500 text-xs mt-1">{t("dashboard.pregnancyCare.subtitle")}</Text>
         <View className="flex-row items-center gap-1 mt-3 self-start bg-pink-50 rounded-full px-3 py-1.5">

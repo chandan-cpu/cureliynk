@@ -1,6 +1,7 @@
 import { getAccessToken } from "@/lib/auth-storage";
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? "http://localhost:5000";
+const REQUEST_TIMEOUT_MS = 10000;
 
 /** Mirrors the `{ success, message, errors }` shape every backend route returns. */
 export class ApiError extends Error {
@@ -39,12 +40,24 @@ export async function apiRequest<T = undefined>(
 
   let response: Response;
   try {
-    response = await fetch(`${API_BASE_URL}${path}`, {
-      method,
-      headers,
-      body: body !== undefined ? JSON.stringify(body) : undefined,
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+    try {
+      response = await fetch(`${API_BASE_URL}${path}`, {
+        method,
+        headers,
+        body: body !== undefined ? JSON.stringify(body) : undefined,
+        signal: controller.signal,
+      });
+    } finally {
+      clearTimeout(timeoutId);
+    }
   } catch {
+    // Covers both an outright network failure (fetch rejects immediately)
+    // and a connection that hangs with no response — e.g. a firewall or
+    // NAT silently dropping packets instead of refusing the connection,
+    // which would otherwise leave this Promise unsettled forever and hang
+    // any caller waiting on it (like the auth bootstrap on app launch).
     throw new ApiError(0, "Couldn't reach the server. Check your connection and try again.");
   }
 
