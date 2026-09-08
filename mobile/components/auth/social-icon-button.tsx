@@ -21,8 +21,8 @@ export function SocialIconButton({
       activeOpacity={0.75}
       className={
         variant === "dark"
-          ? "flex-1 items-center justify-center rounded-2xl bg-slate-900 py-3.5"
-          : "flex-1 items-center justify-center rounded-2xl border border-slate-200 bg-white py-3.5"
+          ? "flex-1 items-center justify-center rounded-2xl bg-slate-900 dark:bg-slate-700 py-3.5"
+          : "flex-1 items-center justify-center rounded-2xl border border-line dark:border-line-dark bg-card dark:bg-card-dark py-3.5"
       }
       style={disabled ? { opacity: 0.5 } : undefined}
     >

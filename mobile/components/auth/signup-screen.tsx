@@ -9,6 +9,7 @@ import { AuthPasswordField } from "@/components/auth/auth-password-field";
 import { AuthTextField } from "@/components/auth/auth-text-field";
 import { ApiError } from "@/lib/api";
 import { registerUser } from "@/lib/auth";
+import { useThemeColors } from "@/lib/theme";
 
 const PASSWORD_RULE =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#^]).{8,}$/;
@@ -18,6 +19,7 @@ type FieldErrors = Partial<Record<"name" | "email" | "phone" | "password", strin
 export function SignupScreen() {
   const router = useRouter();
   const { t } = useTranslation();
+  const colors = useThemeColors();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -62,7 +64,7 @@ export function SignupScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-card dark:bg-surface-dark">
       <ScrollView
         className="flex-1 px-6 pt-2"
         contentContainerStyle={{ paddingBottom: 24 }}
@@ -73,12 +75,12 @@ export function SignupScreen() {
           hitSlop={12}
           className="w-10 h-10 items-center justify-center -ml-2"
         >
-          <Ionicons name="arrow-back" size={24} color="#0F172A" />
+          <Ionicons name="arrow-back" size={24} color={colors.content} />
         </TouchableOpacity>
 
         <View className="items-center mt-2">
-          <Text className="text-slate-900 text-2xl font-bold">{t("auth.signup.title")}</Text>
-          <Text className="text-slate-500 text-sm mt-1">{t("auth.signup.subtitle")}</Text>
+          <Text className="text-content dark:text-content-dark text-2xl font-bold">{t("auth.signup.title")}</Text>
+          <Text className="text-muted dark:text-muted-dark text-sm mt-1">{t("auth.signup.subtitle")}</Text>
         </View>
 
         <View className="mt-8 gap-4">
@@ -139,18 +141,18 @@ export function SignupScreen() {
           onPress={handleSubmit}
           disabled={submitting}
           activeOpacity={0.85}
-          className="items-center justify-center bg-brand-dark rounded-full py-4 mt-8"
+          className="items-center justify-center bg-brand-dark dark:bg-brand rounded-full py-4 mt-8"
           style={submitting ? { opacity: 0.7 } : undefined}
         >
-          <Text className="text-white text-base font-semibold">
+          <Text className="text-white dark:text-[#052E16] text-base font-semibold">
             {submitting ? "..." : t("auth.signup.submit")}
           </Text>
         </TouchableOpacity>
 
         <View className="items-center mt-6">
-          <Text className="text-slate-500 text-sm">
+          <Text className="text-muted dark:text-muted-dark text-sm">
             {t("auth.signup.alreadyHaveAccount")}{" "}
-            <Text className="text-brand-dark font-semibold" onPress={() => router.replace("/login")}>
+            <Text className="text-brand-dark dark:text-brand font-semibold" onPress={() => router.replace("/login")}>
               {t("auth.signup.login")}
             </Text>
           </Text>

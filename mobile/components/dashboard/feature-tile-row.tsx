@@ -16,7 +16,7 @@ export function FeatureTileRow() {
           key={feature.id}
           onPress={() => router.push(feature.route)}
           activeOpacity={0.8}
-          className="flex-1 items-center rounded-2xl bg-white border border-slate-100 p-3 gap-2"
+          className="flex-1 items-center rounded-2xl bg-card dark:bg-card-dark border border-line dark:border-line-dark p-3 gap-2"
         >
           <View
             className="w-10 h-10 rounded-full items-center justify-center"
@@ -24,7 +24,10 @@ export function FeatureTileRow() {
           >
             <Ionicons name={feature.icon} size={18} color="#FFFFFF" />
           </View>
-          <Text className="text-slate-700 text-[11px] font-semibold text-center" numberOfLines={2}>
+          <Text
+            className="text-content dark:text-content-dark text-[11px] font-semibold text-center"
+            numberOfLines={2}
+          >
             {t(`dashboard.features.${feature.id}.title`)}
           </Text>
         </TouchableOpacity>

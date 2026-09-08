@@ -1,6 +1,7 @@
+import { API_BASE_URL } from "@/lib/api-config";
 import { getAccessToken } from "@/lib/auth-storage";
+import { refreshAccessToken } from "@/lib/session";
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? "http://localhost:5000";
 const REQUEST_TIMEOUT_MS = 10000;
 
 /** Mirrors the `{ success, message, errors }` shape every backend route returns. */
@@ -31,34 +32,44 @@ export async function apiRequest<T = undefined>(
   path: string,
   { method = "GET", body, authenticated = false }: RequestOptions = {},
 ): Promise<T> {
-  const headers: Record<string, string> = { "Content-Type": "application/json" };
-
-  if (authenticated) {
-    const token = await getAccessToken();
+  /** One attempt. `token` is null for public routes and for a missing token. */
+  const send = async (token: string | null): Promise<Response> => {
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
     if (token) headers.Authorization = `Bearer ${token}`;
-  }
 
-  let response: Response;
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
     try {
-      response = await fetch(`${API_BASE_URL}${path}`, {
-        method,
-        headers,
-        body: body !== undefined ? JSON.stringify(body) : undefined,
-        signal: controller.signal,
-      });
-    } finally {
-      clearTimeout(timeoutId);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+      try {
+        return await fetch(`${API_BASE_URL}${path}`, {
+          method,
+          headers,
+          body: body !== undefined ? JSON.stringify(body) : undefined,
+          signal: controller.signal,
+        });
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    } catch {
+      // Covers both an outright network failure (fetch rejects immediately)
+      // and a connection that hangs with no response — e.g. a firewall or
+      // NAT silently dropping packets instead of refusing the connection,
+      // which would otherwise leave this Promise unsettled forever and hang
+      // any caller waiting on it (like the auth bootstrap on app launch).
+      throw new ApiError(0, "Couldn't reach the server. Check your connection and try again.");
     }
-  } catch {
-    // Covers both an outright network failure (fetch rejects immediately)
-    // and a connection that hangs with no response — e.g. a firewall or
-    // NAT silently dropping packets instead of refusing the connection,
-    // which would otherwise leave this Promise unsettled forever and hang
-    // any caller waiting on it (like the auth bootstrap on app launch).
-    throw new ApiError(0, "Couldn't reach the server. Check your connection and try again.");
+  };
+
+  let response = await send(authenticated ? await getAccessToken() : null);
+
+  // A 401 on an authenticated call is nearly always the 15-minute access
+  // token ageing out mid-session, which is recoverable without involving the
+  // user: swap it for a fresh one and replay the request once. Only when the
+  // refresh token is itself rejected does the 401 reach the caller — and by
+  // then `lib/session` has cleared the tokens and signed the user out.
+  if (authenticated && response.status === 401) {
+    const outcome = await refreshAccessToken();
+    if (outcome.status === "refreshed") response = await send(outcome.accessToken);
   }
 
   const envelope = (await response.json()) as ApiEnvelope<T>;

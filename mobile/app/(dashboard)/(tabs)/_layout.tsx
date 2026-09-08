@@ -3,16 +3,22 @@ import { Ionicons } from "@expo/vector-icons";
 import { View } from "react-native";
 
 import { FloatingAiButton } from "@/components/dashboard/floating-ai-button";
-import { colors } from "@/constants/colors";
+import { useThemeColors } from "@/lib/theme";
 
 export default function DashboardTabsLayout() {
+  const colors = useThemeColors();
+
   return (
-    <View className="flex-1 bg-surface">
+    <View className="flex-1 bg-surface dark:bg-surface-dark">
       <Tabs
         screenOptions={{
           headerShown: false,
-          tabBarActiveTintColor: colors.brand.dark,
-          tabBarInactiveTintColor: "#94A3B8",
+          tabBarActiveTintColor: colors.brand,
+          tabBarInactiveTintColor: colors.icon,
+          tabBarStyle: {
+            backgroundColor: colors.card,
+            borderTopColor: colors.line,
+          },
         }}
       >
         <Tabs.Screen

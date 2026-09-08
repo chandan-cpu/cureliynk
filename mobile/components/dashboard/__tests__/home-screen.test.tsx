@@ -10,6 +10,10 @@ jest.mock("@/lib/auth-context", () => ({
   useAuth: () => ({ user: { name: "Jane Doe" } }),
 }));
 
+jest.mock("@/hooks/use-current-place", () => ({
+  useCurrentPlace: () => ({ place: { status: "ready", label: "Guwahati, Assam" } }),
+}));
+
 describe("HomeScreen", () => {
   it("renders every dashboard section without crashing", async () => {
     const { getByText } = await renderWithProviders(<HomeScreen />);

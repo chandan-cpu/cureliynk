@@ -1,3 +1,5 @@
+import logging
+
 from pinecone import Pinecone
 from sentence_transformers import SentenceTransformer
 
@@ -9,6 +11,9 @@ from app.core.reranker import load_reranker, rerank
 from app.core.context_ranker import context_rank
 from app.core.final_ranker import final_rank
 from app.core.bm25_retriever import load_bm25, bm25_retrieve
+
+
+logger = logging.getLogger(__name__)
 
 # Load embedding model
 
@@ -234,13 +239,11 @@ def retrieve(query,embedding_model,reranker_model,index,bm25_model,bm25_document
 
     intent = processed["intent"]
 
-    print(f"\nOriginal query : "f"{original_query}")
+    # The query itself is the user's symptom description - health data
+    # about an identifiable person once it sits next to a request id in a
+    # log file. Only the derived intent, a fixed label, is safe to record.
 
-    print(f"Search query   : "f"{search_query}")
-
-    print(f"BM25 query     : "f"{bm25_query}")
-
-    print(f"Detected intent: "f"{intent}")
+    logger.debug("Retrieval intent: %s", intent)
 
     # 2. Vector retrieval
 
@@ -254,7 +257,7 @@ def retrieve(query,embedding_model,reranker_model,index,bm25_model,bm25_document
 
     candidates = merge_results(vector_results,bm25_results)
 
-    print(f"Candidates after merge: "f"{len(candidates)}")
+    logger.debug("Candidates after merge: %s", len(candidates))
 
     if not candidates:
 

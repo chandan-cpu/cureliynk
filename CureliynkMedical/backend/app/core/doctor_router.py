@@ -1,5 +1,9 @@
 import json
+import logging
 import re
+
+
+logger = logging.getLogger(__name__)
 
 DOCTOR_ROUTER_PROMPT = """
 You are a medical specialty routing assistant.
@@ -691,10 +695,11 @@ def route_doctor(query,retrieval_results,llm):
         response = llm.generate(system_prompt=DOCTOR_ROUTER_PROMPT,user_prompt=user_prompt,json_mode=True)
 
 
-    except Exception as error:
+    except Exception:
 
-        print("\nLLM routing error:")
-        print(error)
+        # Routing is best-effort: a failed LLM call falls back to a safe
+        # general-medicine referral rather than failing the whole request.
+        logger.exception("Doctor routing LLM call failed.")
 
         return get_fallback_result()
 

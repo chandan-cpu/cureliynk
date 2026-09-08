@@ -10,6 +10,10 @@ from openai import OpenAI
 from app.config.settings import settings
 
 
+# Per-call ceiling, in seconds, for both the routing and translation calls.
+REQUEST_TIMEOUT_SECONDS = 45.0
+
+
 class DeepSeekLLM:
 
     def __init__(
@@ -31,9 +35,15 @@ class DeepSeekLLM:
             or settings.DEEPSEEK_API_KEY
         )
 
+        # The OpenAI client defaults to a 10-minute timeout. A chat request
+        # that hangs that long has already lost the user and is holding a
+        # worker thread the whole time, so cap it much lower and let the
+        # client retry a transient failure instead.
         self.client = OpenAI(
             api_key=self.api_key,
             base_url="https://api.deepseek.com",
+            timeout=REQUEST_TIMEOUT_SECONDS,
+            max_retries=2,
         )
 
     def generate(

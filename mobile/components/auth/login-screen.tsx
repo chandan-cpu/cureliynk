@@ -13,12 +13,14 @@ import { useGoogleSignIn } from "@/hooks/use-google-sign-in";
 import { ApiError } from "@/lib/api";
 import { loginWithEmail, loginWithGoogle } from "@/lib/auth";
 import { useAuth } from "@/lib/auth-context";
+import { useThemeColors } from "@/lib/theme";
 
 export function LoginScreen() {
   const router = useRouter();
   const { t } = useTranslation();
   const { promptGoogleSignIn } = useGoogleSignIn();
   const { signIn } = useAuth();
+  const colors = useThemeColors();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -76,19 +78,19 @@ export function LoginScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-card dark:bg-surface-dark">
       <View className="flex-1 px-6 pt-2">
         <TouchableOpacity
           onPress={() => router.back()}
           hitSlop={12}
           className="w-10 h-10 items-center justify-center -ml-2"
         >
-          <Ionicons name="arrow-back" size={24} color="#0F172A" />
+          <Ionicons name="arrow-back" size={24} color={colors.content} />
         </TouchableOpacity>
 
         <View className="items-center mt-2">
-          <Text className="text-slate-900 text-2xl font-bold">{t("auth.login.title")}</Text>
-          <Text className="text-slate-500 text-sm mt-1">{t("auth.login.subtitle")}</Text>
+          <Text className="text-content dark:text-content-dark text-2xl font-bold">{t("auth.login.title")}</Text>
+          <Text className="text-muted dark:text-muted-dark text-sm mt-1">{t("auth.login.subtitle")}</Text>
         </View>
 
         <View className="mt-8 gap-4">
@@ -122,7 +124,7 @@ export function LoginScreen() {
             className="self-end"
             onPress={() => Alert.alert(t("auth.login.forgotPassword"), "Password reset isn't available yet.")}
           >
-            <Text className="text-brand-dark text-xs font-semibold">
+            <Text className="text-brand-dark dark:text-brand text-xs font-semibold">
               {t("auth.login.forgotPassword")}
             </Text>
           </TouchableOpacity>
@@ -132,26 +134,26 @@ export function LoginScreen() {
           onPress={handleLogin}
           disabled={submitting}
           activeOpacity={0.85}
-          className="items-center justify-center bg-brand-dark rounded-full py-4 mt-6"
+          className="items-center justify-center bg-brand-dark dark:bg-brand rounded-full py-4 mt-6"
           style={submitting ? { opacity: 0.7 } : undefined}
         >
-          <Text className="text-white text-base font-semibold">
+          <Text className="text-white dark:text-[#052E16] text-base font-semibold">
             {submitting ? "..." : t("auth.login.submit")}
           </Text>
         </TouchableOpacity>
 
         <View className="flex-row items-center gap-3 mt-6">
-          <View className="flex-1 h-px bg-slate-200" />
-          <Text className="text-slate-400 text-xs">{t("auth.login.or")}</Text>
-          <View className="flex-1 h-px bg-slate-200" />
+          <View className="flex-1 h-px bg-line dark:bg-line-dark" />
+          <Text className="text-muted dark:text-muted-dark text-xs">{t("auth.login.or")}</Text>
+          <View className="flex-1 h-px bg-line dark:bg-line-dark" />
         </View>
 
         <TouchableOpacity
           onPress={() => Alert.alert(t("auth.login.otp"), t("auth.login.otpComingSoon"))}
           activeOpacity={0.75}
-          className="items-center justify-center rounded-full border border-slate-200 bg-white py-4 mt-6"
+          className="items-center justify-center rounded-full border border-line dark:border-line-dark bg-card dark:bg-card-dark py-4 mt-6"
         >
-          <Text className="text-slate-700 text-base font-semibold">{t("auth.login.otp")}</Text>
+          <Text className="text-content dark:text-content-dark text-base font-semibold">{t("auth.login.otp")}</Text>
         </TouchableOpacity>
 
         <View className="flex-row gap-3 mt-4">
@@ -165,10 +167,10 @@ export function LoginScreen() {
       </View>
 
       <View className="items-center pb-6">
-        <Text className="text-slate-500 text-sm">
+        <Text className="text-muted dark:text-muted-dark text-sm">
           {t("auth.login.newHere")}{" "}
           <Text
-            className="text-brand-dark font-semibold"
+            className="text-brand-dark dark:text-brand font-semibold"
             onPress={() => router.push("/signup")}
           >
             {t("auth.login.createAccount")}

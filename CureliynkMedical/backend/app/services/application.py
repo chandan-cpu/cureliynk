@@ -5,6 +5,8 @@ Creates the long-lived components required by the
 AI Medical Assistant.
 """
 
+import logging
+
 from app.services.translation_service import TranslationService
 from app.services.specialist_service import Specialist_Service
 from app.providers.geoapify_specialist_provider import (
@@ -15,6 +17,19 @@ from app.core.doctor_router import DoctorRouter
 from app.core.pipeline import MedicalPipeline
 from app.providers.geoapify_geocoding_provider import GeoapifyGeocondingProvider
 from app.providers.mongodb_specialist_provider import MongoDBSpecialistProvider
+
+
+logger = logging.getLogger(__name__)
+
+
+# How far out to look for a specialist before falling back to the local
+# doctor database.
+SEARCH_RADIUS_KM = 10.5
+
+# Most providers to hand back. The chat screen shows the first few and links
+# to the full doctor search for the rest, so a longer list only costs
+# bandwidth and translation calls.
+MAX_NEARBY_SPECIALISTS = 10
 
 
 class MedicalApplication:
@@ -73,45 +88,91 @@ class MedicalApplication:
 
         result = self.pipeline.process(query=query.strip())
 
-        # Find nearby specialist providers
+        # The retrieval block is the raw knowledge-base text used to reach the
+        # recommendation. It is large, it is not shown to anyone, and leaving
+        # it on the result means it gets translated and serialised for no
+        # reason - so drop it once routing is done.
+        result.pop("retrieval", None)
 
-        if (latitude is not None and longitude is not None):
+        # Find nearby specialist providers.
+        # Location is optional: without it the user still gets a specialty and
+        # an urgency, just no doctor list.
 
-            doctor = result.get("doctor") or {}
-
-            specialty = doctor.get("medical_specialty")
-
-            if specialty:
-
-                nearby_specialists = (self.Services.find_nearby_specialist(specialty=specialty,latitude=latitude,longitude=longitude,distance_km=10.5,))
-
-                if not nearby_specialists:
-                    district = self.MongoDBServices.get_location(
-                        latitude=latitude,
-                        longitude=longitude
-                    )
-
-                    nearby_specialists_mdb = (
-                        self.MongoDBProvider.find_by_district(
-                            district=district,
-                            specialty=specialty
-                        )
-                    )
-                    result["nearby_specialists"] = nearby_specialists_mdb
-                    print(district)
-                    print(nearby_specialists_mdb)
-
-                result["nearby_specialists"] = nearby_specialists
-
-        # Debug
-
-        print("LANGUAGE RECEIVED:",language)
+        result["nearby_specialists"] = self._find_nearby(
+            doctor=result.get("doctor") or {},
+            latitude=latitude,
+            longitude=longitude,
+        )
 
         # Translate final result
-        print("========== BEFORE translate_result CALL ==========")
+
         result = self.translation_service.translate_result(result=result,language=language,)
-        print("========== AFTER translate_result CALL ==========")
 
         # Return final response
 
         return result
+
+    # -----------------------------------------------------
+    # Nearby specialists
+    # -----------------------------------------------------
+
+    def _find_nearby(self, doctor: dict, latitude, longitude) -> list[dict]:
+        """
+        Look for providers near the user, maps search first.
+
+        A failure here is never fatal: a recommendation with no doctor list is
+        still useful, so every lookup is allowed to come back empty.
+        """
+
+        if latitude is None or longitude is None:
+            return []
+
+        specialty = doctor.get("medical_specialty")
+
+        if not specialty:
+            return []
+
+        try:
+            nearby = self.Services.find_nearby_specialist(
+                specialty=specialty,
+                latitude=latitude,
+                longitude=longitude,
+                distance_km=SEARCH_RADIUS_KM,
+            )
+
+        except Exception:
+            # Upstream maps API down, rate limited, or key rejected.
+            logger.exception(
+                "Nearby specialist search failed; falling back to the local "
+                "doctor database."
+            )
+
+            nearby = []
+
+        if nearby:
+            return nearby[:MAX_NEARBY_SPECIALISTS]
+
+        # Nothing within range from the maps provider - fall back to our own
+        # doctor database for the user's district.
+        try:
+            district = self.MongoDBServices.get_location(
+                latitude=latitude,
+                longitude=longitude,
+            )
+
+            if not district:
+                return []
+
+            local = self.MongoDBProvider.find_by_district(
+                district=district,
+                specialty=specialty,
+            )
+
+            return (local or [])[:MAX_NEARBY_SPECIALISTS]
+
+        except Exception:
+            logger.exception(
+                "Local doctor database lookup failed."
+            )
+
+            return []

@@ -17,6 +17,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { HERO_SLIDES, type HeroSlide, type HeroSlideId } from "@/constants/heroSlides";
+import { useThemeColors } from "@/lib/theme";
 
 const SIDE_MARGIN = 20;
 const SLIDE_GAP = 12;
@@ -56,6 +57,7 @@ type HeroSlideCardProps = {
 function HeroSlideCard({ slide, index, scrollX, slideWidth, containerHeight }: HeroSlideCardProps) {
   const { t } = useTranslation();
   const navigate = useSlideNavigation();
+  const colors = useThemeColors();
   const step = slideWidth + SLIDE_GAP;
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -71,7 +73,7 @@ function HeroSlideCard({ slide, index, scrollX, slideWidth, containerHeight }: H
     // at its own aspect ratio, no overlay or injected copy on top of it.
     const cardHeight = Math.min(slideWidth / (slide.aspectRatio ?? 1), PLAIN_IMAGE_MAX_HEIGHT);
     content = (
-      <View style={{ width: slideWidth, height: cardHeight, borderRadius: 20, overflow: "hidden", backgroundColor: "#EFF6FC" }}>
+      <View style={{ width: slideWidth, height: cardHeight, borderRadius: 20, overflow: "hidden", backgroundColor: colors.surface }}>
         <Image source={slide.plainImage} style={{ width: "100%", height: "100%" }} contentFit="contain" transition={150} />
       </View>
     );
@@ -192,7 +194,11 @@ export function HeroCarousel() {
         {HERO_SLIDES.map((_, index) => (
           <View
             key={index}
-            className={index === activeIndex ? "w-6 h-2 rounded-full bg-brand-dark" : "w-2 h-2 rounded-full bg-slate-300"}
+            className={
+              index === activeIndex
+                ? "w-6 h-2 rounded-full bg-brand-dark dark:bg-brand"
+                : "w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-600"
+            }
           />
         ))}
       </View>

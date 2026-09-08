@@ -1,3 +1,4 @@
+import logging
 import os
 
 from pymongo import MongoClient
@@ -6,8 +7,14 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+logger = logging.getLogger(__name__)
+
 
 class MongoDBSpecialistProvider:
+    """
+    The local doctor database, used when the maps search finds nobody in
+    range.
+    """
 
     def __init__(self):
 
@@ -22,6 +29,12 @@ class MongoDBSpecialistProvider:
             "MONGODB_COLLECTION",
             "doctors"
         )
+
+        if not mongo_uri:
+            logger.warning(
+                "MONGODB_URI is not set. The local doctor database will "
+                "return no results."
+            )
 
         self.client = MongoClient(mongo_uri)
 
@@ -50,12 +63,28 @@ class MongoDBSpecialistProvider:
 
         for doctor in doctors:
 
+            # Rows come from a hand-maintained collection, so a missing field
+            # is normal. The API contract requires a name and a location, and
+            # a row that cannot supply either is not worth showing.
+            name = (doctor.get("doctor_name") or "").strip()
+
+            facility = (doctor.get("facility") or "").strip()
+
+            if not name:
+                continue
+
+            specialty_name = (
+                doctor.get("specialty") or specialty
+            )
+
             specialists.append({
-                "name": doctor.get("doctor_name"),
-                "speciality": doctor.get("specialty"),
-                "doctor_type": doctor.get("specialty"),
-                "distance": 0.0,
-                "location": doctor.get("facility")
+                "name": name,
+                "speciality": specialty_name,
+                "doctor_type": specialty_name,
+                # These rows carry no coordinates, so there is no distance to
+                # report. `None` is honest; 0.0 would read as "right here".
+                "distance": None,
+                "location": facility or "Address unavailable",
             })
 
         return specialists

@@ -1,53 +1,68 @@
 """
 Translation Service
 
-Translates the medical response into the language
-selected by the user using the existing OllamaLLM.
+Translates the medical response into the language selected by the user, using
+the same LLM the rest of the pipeline runs on.
+
+Two rules shape this module:
+
+* Only the text a human reads is translated. `urgency` stays a canonical
+  English code, and the specialty is carried through in English as well as in
+  the user's language, because the mobile app switches its emergency UI and
+  its doctor search on those values.
+* A translation failure degrades to English rather than failing the request.
+  A user who asked in Assamese and gets an English answer has been helped;
+  one who gets a 500 has not.
 """
+
+import logging
+import threading
+
+
+logger = logging.getLogger(__name__)
+
+
+LANGUAGE_NAMES = {
+    "en": "English",
+    "hi": "Hindi",
+    "as": "Assamese",
+    "bn": "Bengali",
+}
+
+
+# Specialty and doctor-type strings come from a fixed vocabulary and repeat on
+# almost every request, so their translations are worth keeping. The reason
+# text is unique per user and is never cached.
+_CACHE_LIMIT = 512
 
 
 class TranslationService:
 
     def __init__(self, llm):
         self.llm = llm
-        print("in the translator")
 
-    # Translate one piece of text
+        self._cache: dict[tuple[str, str], str] = {}
 
-    def translate_text(self,text: str,language: str,) -> str:
+        self._cache_lock = threading.Lock()
 
+    # -----------------------------------------------------
+    # Single strings
+    # -----------------------------------------------------
 
-        # No text
+    def translate_text(self, text: str, language: str) -> str:
+        """
+        Translate one string, returning the original if that is not possible.
+        """
 
-        if not text:
-
+        if not text or language == "en":
             return text
 
-        # Supported languages
+        target_language = LANGUAGE_NAMES.get(language)
 
-        language_map = {
-        "en": "English",
-        "hi": "Hindi",
-        "as": "Assamese",
-        "bn": "Bengali",
-        }
-        
-
-        target_language = language_map.get(language,"English",)
-
-        # English does not need translation
-        
-        if language == "en":
+        if target_language is None:
+            # Should be unreachable: the request schema restricts `language`
+            # to the supported set.
             return text
-        print("========== STARTING TRANSLATION ==========")
-        # Debug
-
-        print("TRANSLATING:")
-        print("TEXT:", text)
-        print("LANGUAGE:", language)
-        print("TARGET:", target_language)
-
-        # System prompt
 
         system_prompt = f"""
 You are a professional medical translator.
@@ -70,8 +85,6 @@ STRICT RULES:
 10. Return ONLY the translated text.
 """
 
-        # User prompt
-
         user_prompt = f"""
 Translate the following medical text into {target_language}.
 
@@ -79,141 +92,129 @@ Text:
 {text}
 """
 
-        # Use existing OllamaLLM
+        try:
+            response = self.llm.generate(
+                system_prompt=system_prompt,
+                user_prompt=user_prompt,
+            )
 
-        response = self.llm.generate(system_prompt=system_prompt,user_prompt=user_prompt,)
+        except Exception:
+            # Never log the text itself - it is the user's symptom
+            # description.
+            logger.exception(
+                "Translation to %s failed; returning the English text.",
+                language,
+            )
 
-        # Debug Ollama response
+            return text
 
-        print("OLLAMA TRANSLATION RESPONSE:")
-        print(response)
+        translated = (response or "").strip()
 
-        return response
+        return translated or text
 
-    # Translate complete medical result
+    def _translate_cached(self, text: str, language: str) -> str:
+        """
+        `translate_text` for values from a small fixed vocabulary, such as
+        "Cardiology" or "Pediatrician".
+        """
 
-    def translate_result(self,result: dict,language: str,) -> dict:
+        if not text or language == "en":
+            return text
 
-        print("========== ENTERED translate_result ==========")
+        key = (language, text)
 
-        # English → no translation
+        with self._cache_lock:
+            cached = self._cache.get(key)
+
+        if cached is not None:
+            return cached
+
+        translated = self.translate_text(text, language)
+
+        with self._cache_lock:
+            # Plain size cap rather than an LRU: the vocabulary is small
+            # enough that eviction order does not matter.
+            if len(self._cache) >= _CACHE_LIMIT:
+                self._cache.clear()
+
+            self._cache[key] = translated
+
+        return translated
+
+    # -----------------------------------------------------
+    # Whole result
+    # -----------------------------------------------------
+
+    def translate_result(self, result: dict, language: str) -> dict:
+        """
+        Translate the user-facing parts of a pipeline result.
+
+        Always sets `doctor["medical_specialty_code"]` to the canonical
+        English specialty, in every language including English, so callers
+        have one field they can always match on.
+        """
+
+        translated = dict(result)
+
+        doctor = dict(result.get("doctor") or {})
+
+        # Canonical, never translated. Set before anything else so it survives
+        # an early return.
+        doctor["medical_specialty_code"] = doctor.get("medical_specialty", "")
 
         if language == "en":
-            print("========== ENGLISH: RETURNING ==========")
-            return result
+            translated["doctor"] = doctor
 
-        # Copy original result
-       
+            return translated
 
-
-        translated = result.copy()
-
-        # Doctor information
-
-        doctor = result.get("doctor") or {}
-
-        translated_doctor = doctor.copy()
-
-        # Medical specialty
-
-        translated_doctor["medical_specialty"] = (
-            self.translate_text(
-                doctor.get(
-                    "medical_specialty",
-                    "",
-                ),
-                language,
-            )
+        doctor["medical_specialty"] = self._translate_cached(
+            doctor.get("medical_specialty", ""),
+            language,
         )
 
-        # Doctor type
-
-        translated_doctor["doctor_type"] = (
-            self.translate_text(
-                doctor.get(
-                    "doctor_type",
-                    "",
-                ),
-                language,
-            )
+        doctor["doctor_type"] = self._translate_cached(
+            doctor.get("doctor_type", ""),
+            language,
         )
 
-        # Urgency
+        # `urgency` is deliberately NOT translated. It is a machine-readable
+        # code ("routine" | "soon" | "urgent" | "emergency") that the mobile
+        # app compares against to decide whether to show the emergency banner
+        # and the ambulance button; a translated value would silently disable
+        # both.
 
-        translated_doctor["urgency"] = (
-            self.translate_text(
-                doctor.get(
-                    "urgency",
-                    "",
-                ),
-                language,
-            )
+        doctor["reason"] = self.translate_text(
+            doctor.get("reason", ""),
+            language,
         )
 
-        # Reason
+        translated["doctor"] = doctor
 
-        translated_doctor["reason"] = (
-            self.translate_text(
-                doctor.get(
-                    "reason",
-                    "",
-                ),
+        # Nearby specialists.
+        #
+        # Only the two vocabulary fields are translated, and both go through
+        # the cache - a list of ten providers nearly always shares one
+        # specialty, so this is two LLM calls rather than twenty.
+        #
+        # Names, addresses and coordinates stay exactly as the provider gave
+        # them: a translated clinic name is not something anyone can act on.
+        specialists = []
+
+        for provider in result.get("nearby_specialists", []) or []:
+            provider_copy = dict(provider)
+
+            provider_copy["speciality"] = self._translate_cached(
+                provider.get("speciality", ""),
                 language,
             )
-        )
-        # Put translated doctor back
 
-        translated["doctor"] = translated_doctor
-
-        # Nearby specialists
-
-        nearby_specialists = []
-
-        for provider in result.get(
-            "nearby_specialists",
-            [],
-        ):
-
-            provider_copy = provider.copy()
-
-            # Translate speciality
-
-            provider_copy["speciality"] = (
-                self.translate_text(
-                    provider.get(
-                        "speciality",
-                        "",
-                    ),
-                    language,
-                )
+            provider_copy["doctor_type"] = self._translate_cached(
+                provider.get("doctor_type", ""),
+                language,
             )
 
-            # Translate doctor type
+            specialists.append(provider_copy)
 
-            provider_copy["doctor_type"] = (
-                self.translate_text(
-                    provider.get(
-                        "doctor_type",
-                        "",
-                    ),
-                    language,
-                )
-            )
-
-            # Keep original:
-            #
-            # name
-            # location
-            # distance
-            # latitude
-            # longitude
-
-            nearby_specialists.append(provider_copy)
-
-        # Put nearby specialists back
-
-        translated["nearby_specialists"] = (nearby_specialists)
-
-        # Return translated result
+        translated["nearby_specialists"] = specialists
 
         return translated

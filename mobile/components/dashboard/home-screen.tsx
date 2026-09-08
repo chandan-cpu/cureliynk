@@ -1,4 +1,3 @@
-import { StatusBar } from "expo-status-bar";
 import { ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -16,8 +15,7 @@ import { UpcomingMedicineCard } from "@/components/dashboard/upcoming-medicine-c
 
 export function HomeScreen() {
   return (
-    <SafeAreaView className="flex-1 bg-surface" edges={["top"]}>
-      <StatusBar style="dark" />
+    <SafeAreaView className="flex-1 bg-surface dark:bg-surface-dark" edges={["top"]}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24 }}>
         <GreetingHeader />
         <HeroCarousel />

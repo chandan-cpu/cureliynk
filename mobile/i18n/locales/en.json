@@ -93,14 +93,21 @@
   },
   "dashboard": {
     "hero": {
-      "askAi": { "title": "Your AI Health Assistant", "subtitle": "Get instant answers to your health questions" },
-      "pregnancy": { "title": "Complete Pregnancy Care", "subtitle": "Expert guidance for every step of your journey" }
+      "askAi": {
+        "title": "Your AI Health Assistant",
+        "subtitle": "Get instant answers to your health questions"
+      },
+      "pregnancy": {
+        "title": "Complete Pregnancy Care",
+        "subtitle": "Expert guidance for every step of your journey"
+      }
     },
     "greeting": {
       "morning": "Good Morning, {{name}}!",
       "afternoon": "Good Afternoon, {{name}}!",
       "evening": "Good Evening, {{name}}!",
-      "subtitle": "How are you feeling today?"
+      "subtitle": "How are you feeling today?",
+      "locating": "Locating…"
     },
     "disclaimer": {
       "title": "Important Health Disclaimer",
@@ -137,9 +144,15 @@
       "emptyMessage": "No reminders set yet."
     },
     "features": {
-      "medicineReminder": { "title": "Medicine Reminder" },
-      "labsNearMe": { "title": "Labs Near Me" },
-      "healthInsurance": { "title": "Health Insurance" }
+      "medicineReminder": {
+        "title": "Medicine Reminder"
+      },
+      "labsNearMe": {
+        "title": "Labs Near Me"
+      },
+      "healthInsurance": {
+        "title": "Health Insurance"
+      }
     },
     "upcomingMedicine": {
       "title": "Upcoming Medicine",
@@ -166,5 +179,85 @@
       "logoutConfirmTitle": "Log Out",
       "logoutConfirmMessage": "Are you sure you want to log out?"
     }
+  },
+  "chat": {
+    "title": "CureLiynk AI",
+    "back": "Back",
+    "send": "Send",
+    "stop": "Stop",
+    "emptyHeadline": "What's bothering you?",
+    "emptySubtitle": "Describe your symptoms in your own words. I'll tell you which doctor to see and find one near you.",
+    "examples": {
+      "cardiac": "My chest feels tight when I climb stairs",
+      "headache": "I have had a headache for five days",
+      "pediatric": "My child has a rash and a fever"
+    },
+    "placeholderNew": "Type your symptoms…",
+    "placeholderFollowUp": "Ask a follow-up…",
+    "thinking": "Checking the medical reference library…",
+    "disclaimer": "Not a diagnosis. In an emergency, call 108.",
+    "emergencyDisclaimer": "Not a diagnosis. Emergency services decide your care.",
+    "emergencyBanner": "This may be an emergency. Get help now.",
+    "callAmbulance": "Call 108 — ambulance",
+    "showAllNearby": "Show all {{specialty}} nearby",
+    "seeA": "See a {{doctorType}}.",
+    "doctorsIntro_one": "Here is one nearby:",
+    "doctorsIntro_other": "Here are {{count}} near you:",
+    "noDoctors": "I could not find a matching doctor near you right now.",
+    "noDoctorsNoLocation": "Turn on location to see doctors near you.",
+    "kmAway": "{{distance}} km away",
+    "openInMaps": "Open {{name}} in maps",
+    "retry": "Try again",
+    "errors": {
+      "network": "Couldn't reach the assistant. Check your connection and try again.",
+      "session": "Your session has ended. Please sign in again.",
+      "rateLimit": "That's a lot of questions at once. Please wait a moment before asking again.",
+      "rejected": "I couldn't read that question. Try describing your symptoms in a sentence or two.",
+      "unavailable": "The assistant is busy right now. Please try again in a moment.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "edit": "Edit",
+    "appearance": {
+      "title": "Appearance",
+      "subtitle": "Choose how CureLiynk looks on this device.",
+      "light": {
+        "title": "Light",
+        "subtitle": "Always use the light theme"
+      },
+      "dark": {
+        "title": "Dark",
+        "subtitle": "Always use the dark theme"
+      },
+      "system": {
+        "title": "System Default",
+        "subtitle": "Follow your device setting"
+      }
+    },
+    "sections": {
+      "healthRecord": "Health record",
+      "activity": "Your activity",
+      "settings": "Settings"
+    },
+    "rows": {
+      "conditions": "Conditions & medical history",
+      "allergies": "Allergies",
+      "medications": "Current medications",
+      "reports": "Reports & prescriptions",
+      "conversations": "Past conversations",
+      "savedDoctors": "Saved doctors",
+      "appointmentReminders": "Appointment reminders",
+      "language": "Language",
+      "location": "Location",
+      "emergencyContacts": "Emergency contacts",
+      "notifications": "Notifications",
+      "privacy": "Privacy & data",
+      "help": "Help & support"
+    },
+    "locationUnknown": "Not set",
+    "signOut": "Sign out",
+    "version": "CureLiynk AI · v{{version}}"
   }
 }

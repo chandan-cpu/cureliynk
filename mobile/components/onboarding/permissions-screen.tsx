@@ -12,12 +12,14 @@ import {
   getPermissionGranted,
   requestPermissionGranted,
 } from "@/lib/permissions";
+import { useThemeColors } from "@/lib/theme";
 
 type GrantedMap = Partial<Record<DevicePermissionId, boolean>>;
 
 export function PermissionsScreen() {
   const router = useRouter();
   const { t } = useTranslation();
+  const colors = useThemeColors();
   const [granted, setGranted] = useState<GrantedMap>({});
   const [pendingId, setPendingId] = useState<DevicePermissionId | null>(null);
 
@@ -49,21 +51,21 @@ export function PermissionsScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-card dark:bg-surface-dark">
       <View className="flex-1 px-6 pt-2">
         <TouchableOpacity
           onPress={() => router.back()}
           hitSlop={12}
           className="w-10 h-10 items-center justify-center -ml-2"
         >
-          <Ionicons name="arrow-back" size={24} color="#0F172A" />
+          <Ionicons name="arrow-back" size={24} color={colors.content} />
         </TouchableOpacity>
 
         <View className="mt-4">
-          <Text className="text-slate-900 text-2xl font-bold">
+          <Text className="text-content dark:text-content-dark text-2xl font-bold">
             {t("permissions.title")}
           </Text>
-          <Text className="text-slate-500 text-sm mt-2">
+          <Text className="text-muted dark:text-muted-dark text-sm mt-2">
             {t("permissions.subtitle")}
           </Text>
         </View>
@@ -91,9 +93,9 @@ export function PermissionsScreen() {
         <TouchableOpacity
           onPress={handleContinue}
           activeOpacity={0.85}
-          className="items-center justify-center bg-brand-dark rounded-full py-4"
+          className="items-center justify-center bg-brand-dark dark:bg-brand rounded-full py-4"
         >
-          <Text className="text-white text-base font-semibold">
+          <Text className="text-white dark:text-[#052E16] text-base font-semibold">
             {t("common.continue")}
           </Text>
         </TouchableOpacity>

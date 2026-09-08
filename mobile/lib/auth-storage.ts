@@ -36,6 +36,17 @@ export async function saveTokens(accessToken: string, refreshToken: string): Pro
   await Promise.all([setItem(ACCESS_TOKEN_KEY, accessToken), setItem(REFRESH_TOKEN_KEY, refreshToken)]);
 }
 
+/**
+ * Replaces just the access token, leaving the refresh token in place.
+ *
+ * `POST /api/v1/auth/refresh-token` returns only a new access token — the
+ * refresh token is not rotated — so writing both back would mean writing the
+ * refresh token over itself.
+ */
+export async function saveAccessToken(accessToken: string): Promise<void> {
+  await setItem(ACCESS_TOKEN_KEY, accessToken);
+}
+
 export async function clearTokens(): Promise<void> {
   await Promise.all([deleteItem(ACCESS_TOKEN_KEY), deleteItem(REFRESH_TOKEN_KEY)]);
 }

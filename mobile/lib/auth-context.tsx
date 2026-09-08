@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import { ApiError } from "@/lib/api";
 import { fetchCurrentUser, logout as logoutRequest, type AuthUser } from "@/lib/auth";
 import { clearTokens, getAccessToken } from "@/lib/auth-storage";
+import { onSessionExpired } from "@/lib/session";
 
 type AuthStatus = "loading" | "authenticated" | "unauthenticated";
 
@@ -50,6 +51,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     })();
   }, []);
+
+  // The API clients renew an expired access token behind the caller's back;
+  // they only give up when the refresh token itself is rejected. That happens
+  // deep inside a request with no screen in reach, so it is reported here —
+  // flipping the status unmounts the protected stack and lands the user on
+  // login, instead of leaving them on a signed-in screen where every action
+  // fails with "your session has ended".
+  useEffect(() => onSessionExpired(() => {
+    setUser(null);
+    setStatus("unauthenticated");
+  }), []);
 
   const signIn = (nextUser: AuthUser) => {
     setUser(nextUser);

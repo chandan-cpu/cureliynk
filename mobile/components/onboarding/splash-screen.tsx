@@ -38,15 +38,15 @@ export function SplashScreen() {
   }, [minDurationElapsed, status, router]);
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <SafeAreaView className="flex-1 bg-surface dark:bg-surface-dark">
       <View className="flex-1 items-center justify-center px-8">
         <CurelinkLogo size={112} />
 
         <View className="items-center mt-6">
-          <Text className="text-ink-primary text-4xl font-bold">
+          <Text className="text-content dark:text-content-dark text-4xl font-bold">
             Cureliynk
           </Text>
-          <Text className="text-brand-light text-base mt-2">
+          <Text className="text-brand-dark dark:text-brand-light text-base mt-2">
             {t("splash.tagline")}
           </Text>
         </View>
@@ -58,13 +58,13 @@ export function SplashScreen() {
 
       <View className="items-center px-8 pb-10 gap-5">
         <View className="items-center gap-1.5">
-          <Text className="text-ink-muted text-xs tracking-wide">
+          <Text className="text-muted dark:text-muted-dark text-xs tracking-wide">
             {t("splash.badgeAiPowered")}  ·  {t("splash.badgeTrusted")}  ·  {t("splash.badgeSecure")}
           </Text>
-          <Text className="text-ink-muted text-xs">
+          <Text className="text-muted dark:text-muted-dark text-xs">
             {t("splash.companion")}
           </Text>
-          <Text className="text-ink-muted text-xs">{t("splash.availability")}</Text>
+          <Text className="text-muted dark:text-muted-dark text-xs">{t("splash.availability")}</Text>
         </View>
 
         <PaginationDots

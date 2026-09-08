@@ -22,7 +22,7 @@ export function PaginationDots({ total, activeIndex }: PaginationDotsProps) {
             className={
               isActive
                 ? "w-6 h-2 rounded-full bg-brand"
-                : "w-2 h-2 rounded-full bg-white/20"
+                : "w-2 h-2 rounded-full bg-slate-300 dark:bg-white/20"
             }
           />
         );
