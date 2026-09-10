@@ -95,10 +95,25 @@ class Settings(BaseSettings):
     # API SECURITY
     # =====================================================
     #
-    # Accounts, passwords, tokens and sessions all belong to the Node API;
-    # this service verifies nothing and identifies nobody. Every setting below
-    # is therefore a perimeter control, and they are the only thing standing
-    # between this endpoint and whoever can reach the port.
+    # Accounts, passwords and sessions all belong to the Node API: it is the
+    # only service that can mint a token. What this service does is *verify*
+    # one, using the same signing secret, so a caller has to have signed in
+    # before it will spend an LLM call on them.
+
+    # The Node API's `JWT_SECRET`, verbatim. Access tokens are signed with it
+    # (HS256, `{ id, role, email }`, 15-minute life) in
+    # `server/src/utils/jwt.utils.js`, and verified here with the same value —
+    # so the two services MUST be given the identical string, and rotating it
+    # on one side signs every user out until the other side follows.
+    #
+    # Left unset, the endpoint runs open, which is convenient for local work
+    # against the pipeline alone. Production refuses to start that way.
+    JWT_SECRET: str | None = None
+
+    # Pinned, and passed to the decoder as the *only* accepted algorithm.
+    # Accepting whatever the token's own header asks for is how "alg: none"
+    # and RS256-key-as-HMAC-secret forgeries get in.
+    JWT_ALGORITHM: str = "HS256"
 
     # Browser origins allowed to call this API, comma separated. Native
     # mobile builds send no Origin header and are unaffected by CORS; this
@@ -113,10 +128,10 @@ class Settings(BaseSettings):
     # domain in production to block Host-header spoofing.
     ALLOWED_HOSTS: str = "*"
 
-    # Per-client-address request budget — there is no account to key it on
-    # here. The pipeline runs an embedding model, a reranker and one or more
-    # paid LLM calls per request, so this is a cost control as much as an
-    # abuse control.
+    # Per-caller request budget. The pipeline runs an embedding model, a
+    # reranker and one or more paid LLM calls per request, so this is a cost
+    # control as much as an abuse control. With `JWT_SECRET` set the window is
+    # keyed on the account; without it, on the client address.
     RATE_LIMIT_REQUESTS: int = 10
 
     RATE_LIMIT_WINDOW_SECONDS: int = 60
@@ -153,6 +168,18 @@ class Settings(BaseSettings):
         ]
         return hosts or ["*"]
 
+    @cached_property
+    def auth_enabled(self) -> bool:
+        """
+        Whether callers must present a token from the Node API.
+
+        A blank or whitespace-only secret counts as unset: an env var that
+        exists but is empty is the usual shape of a misconfigured deploy, and
+        it must not be mistaken for "a secret was supplied".
+        """
+
+        return bool((self.JWT_SECRET or "").strip())
+
     def validate_runtime_security(self) -> None:
         """
         Fail fast on a configuration that would silently ship insecure.
@@ -160,12 +187,54 @@ class Settings(BaseSettings):
         Called once from the application lifespan, so a misconfigured deploy
         crashes on boot instead of serving traffic it should not.
 
-        The endpoint is open — it has no login of its own — so the host and
-        origin allowlists below are the whole perimeter, and a wildcard in
-        either is refused in production.
+        Every check here guards something that fails *quietly* — an open
+        endpoint still answers, a wildcard host still serves — which is
+        exactly the kind of mistake that survives to production otherwise.
         """
 
         problems: list[str] = []
+
+        if self.is_production and not self.auth_enabled:
+            problems.append(
+                "JWT_SECRET is not set in production. Every request would be "
+                "unauthenticated, and each one costs an embedding pass, a "
+                "rerank and at least one paid LLM call. Set it to the same "
+                "value as the Node API's JWT_SECRET."
+            )
+
+        # Checked in every environment, not just production, because it is a
+        # correctness bug rather than a hardening measure — and it fails in
+        # the most confusing way possible.
+        #
+        # "#" opens an inline comment in a .env file, and the two parsers
+        # disagree about it: Node's `dotenv` truncates the value there, while
+        # Python's `python-dotenv` keeps the rest. Identical .env text then
+        # gives the Node API one signing key and this service a different
+        # verifying key, so every token fails its signature check and the app
+        # shows "your session has ended" on a perfectly good login.
+        if self.auth_enabled and "#" in self.JWT_SECRET:
+            problems.append(
+                "JWT_SECRET contains '#'. Node's dotenv treats it as the "
+                "start of a comment and truncates the value there, so the "
+                "two services would sign and verify with different keys. "
+                "Use a secret without '#' — `openssl rand -hex 32` gives one "
+                "that is safe in every .env parser, shell and deploy UI."
+            )
+
+        # RFC 7518 section 3.2: an HMAC key shorter than the hash it feeds
+        # weakens HS256, and a short one is guessable offline by anyone
+        # holding a single token. Checked in production only, so the
+        # throwaway secrets in the test suite stay usable.
+        if (
+            self.is_production
+            and self.auth_enabled
+            and len(self.JWT_SECRET.strip().encode("utf-8")) < 32
+        ):
+            problems.append(
+                "JWT_SECRET is shorter than 32 bytes. Generate one with "
+                "`openssl rand -base64 48` and set the same value on the "
+                "Node API."
+            )
 
         if self.is_production and "*" in self.allowed_hosts:
             problems.append(

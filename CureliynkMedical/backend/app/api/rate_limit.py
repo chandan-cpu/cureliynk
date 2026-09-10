@@ -5,12 +5,12 @@ Every medical query runs an embedding model, a cross-encoder reranker and at
 least one paid LLM call, so an unthrottled endpoint is both a denial-of-service
 target and a way to run up someone else's API bill.
 
-This service has no idea who the caller is — sign-in lives entirely in the Node
-API — so the budget is keyed on the client address. That is a blunter instrument
-than a per-account budget: everyone behind one NAT or one mobile carrier gateway
-shares a window. Size `RATE_LIMIT_REQUESTS` for a shared address, and put the
-service somewhere only the Node API can reach it if per-account fairness starts
-to matter.
+The budget is keyed on the account when the caller presented a token, and on
+the client address when they did not. The account key is the one that matters:
+an address-keyed window puts everyone behind one NAT or one mobile carrier
+gateway into a single budget, so a busy user throttles strangers. Size
+`RATE_LIMIT_REQUESTS` for a shared address anyway — that is still the key in
+use whenever `JWT_SECRET` is unset.
 
 The counters live in this process's memory: correct and dependency-free for a
 single Uvicorn worker, which is what this service runs today. Running more than
@@ -24,8 +24,9 @@ import threading
 import time
 from collections import defaultdict, deque
 
-from fastapi import HTTPException, Request, status
+from fastapi import Depends, HTTPException, Request, status
 
+from app.api.auth import Principal, require_principal
 from app.config.settings import settings
 
 
@@ -121,34 +122,45 @@ def _client_ip(request: Request) -> str:
     return request.client.host if request.client else "unknown"
 
 
-def _pseudonym(address: str) -> str:
+def _pseudonym(value: str) -> str:
     """
-    A short, stable stand-in for a client address, for logs.
+    A short, stable stand-in for a client address or account id, for logs.
 
-    An IP address identifies a person closely enough to matter when the
-    requests beside it are medical questions, so the log gets a hash — enough
-    to recognise the same caller twice while debugging, useless to anyone
-    reading the log file.
+    Either one identifies a person closely enough to matter when the requests
+    beside it are medical questions, so the log gets a hash — enough to
+    recognise the same caller twice while debugging, useless to anyone reading
+    the log file.
     """
 
     return hashlib.sha256(
-        address.encode("utf-8")
+        value.encode("utf-8")
     ).hexdigest()[:12]
 
 
-def enforce_rate_limit(request: Request) -> None:
+def enforce_rate_limit(
+    request: Request,
+    # Declared as a sub-dependency rather than relying on this running after
+    # the route's other dependencies: it makes the ordering a fact of the
+    # graph, so an unauthenticated caller is turned away before any budget is
+    # spent on them, and a verified one is billed to their account.
+    principal: Principal | None = Depends(require_principal),
+) -> None:
     """Route dependency: 429s a caller that is over budget."""
 
-    address = _client_ip(request)
+    key = (
+        f"user:{principal.id}"
+        if principal is not None
+        else f"ip:{_client_ip(request)}"
+    )
 
-    retry_after = _limiter.check(f"ip:{address}")
+    retry_after = _limiter.check(key)
 
     if retry_after is None:
         return
 
     logger.warning(
         "Rate limit hit by %s (%s requests / %ss).",
-        _pseudonym(address),
+        _pseudonym(key),
         settings.RATE_LIMIT_REQUESTS,
         settings.RATE_LIMIT_WINDOW_SECONDS,
     )

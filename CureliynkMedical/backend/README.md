@@ -14,13 +14,13 @@ Expo app (mobile/)
    │      └─ owns sign-in: accounts, tokens, sessions
    │
    └── this service  :8000   the Ask AI chat
-          └─ no login of its own; answers whoever reaches it
+          └─ mints no tokens; verifies the Node API's with the shared secret
 ```
 
-This service used to verify the Node API's access tokens. It no longer does —
-authentication is the Node API's job alone. What that means for a deployment is
-in [Security](#security): the endpoint is open to anyone who can reach the port,
-so keep the port itself restricted.
+The Node API is the only one that can issue a token; this service verifies the
+token it is handed, using the same `JWT_SECRET`. That is what "one login" means
+in practice — the app signs in once against the Node API, and the same bearer
+token is accepted here.
 
 ---
 
@@ -43,8 +43,11 @@ cp .env.example .env
 ```
 
 Fill it in — the AI provider keys and `GOOGLE_MAPS_API_KEY` are what the
-pipeline cannot start without. No shared secret with the Node API is needed
-any more; nothing here reads a token.
+pipeline cannot start without.
+
+`JWT_SECRET` must be copied verbatim from the Node API's `.env`. That single
+value is what lets a user sign in once and be recognised by both services;
+without it here, this one cannot verify anything and refuses every request.
 
 ### 3. Run
 
@@ -76,8 +79,31 @@ device cannot reach `localhost` on your computer.
 
 ### `POST /api/v1/medical/query`
 
-No credentials. An `Authorization` header is accepted and ignored, so app
-builds from before this change keep working.
+Requires an access token from the Node API:
+
+```
+Authorization: Bearer <token>
+```
+
+The Node API signs it, this service verifies it, and both read the same
+`JWT_SECRET` — so that one value has to be identical in both services' `.env`.
+Get it wrong and both still start; every medical request just comes back 401.
+
+Every 401 carries an `X-Auth-Error` header saying which kind it is, because
+the app treats them differently:
+
+| `X-Auth-Error`  | Means                              | What the app does        |
+| --------------- | ---------------------------------- | ------------------------ |
+| `missing_token` | No usable `Authorization` header   | Sends the user to log in |
+| `token_expired` | Signature good, 15 minutes elapsed | Refreshes, retries once  |
+| `invalid_token` | Bad signature, or not our shape    | Sends the user to log in |
+
+`token_expired` is routine, not exceptional — access tokens outlive a chat
+session far less often than the reverse.
+
+Leaving `JWT_SECRET` unset drops authentication entirely, for working on the
+pipeline alone; the log says so on every request, and production refuses to
+start that way.
 
 ```jsonc
 // request
@@ -153,11 +179,14 @@ Every failure returns the same shape:
 
 What this service does:
 
-* **Rate limiting.** Per client address, with `Retry-After`. Each request
-  costs an embedding pass, a rerank and a paid LLM call, so this is a bill
-  control as much as an abuse control. Note the bluntness: everyone behind one
-  NAT or carrier gateway shares a window, and one caller can rotate addresses.
-  Without an account to key on, this is the ceiling.
+* **Authentication.** Every request must carry an access token the Node API
+  signed, verified here with the shared `JWT_SECRET`. The accepted algorithm
+  is pinned to HS256, so a token asking to be verified with `alg: none` is
+  rejected rather than trusted.
+* **Rate limiting.** Per account, with `Retry-After`. Each request costs an
+  embedding pass, a rerank and a paid LLM call, so this is a bill control as
+  much as an abuse control. Keyed on the account rather than the address, so
+  one heavy user does not throttle everyone behind the same carrier gateway.
 * **Input validation.** Length cap, unknown fields rejected, coordinate ranges
   checked, control and zero-width characters stripped — those are how
   prompt-injection text gets hidden inside an innocent-looking question.
@@ -170,18 +199,21 @@ What this service does:
 * **Response headers.** `nosniff`, `DENY`, `no-referrer`, and `no-store` —
   these bodies describe someone's symptoms and location and must not be
   cached.
-* **Fails closed.** The service refuses to start if a production config still
-  has a wildcard host or origin.
+* **Fails closed.** The service refuses to start if a production config is
+  missing `JWT_SECRET`, carries one shorter than 32 bytes, or still has a
+  wildcard host or origin.
 
-What it deliberately does **not** do: identify the caller. There is no login,
-no token check and no per-account anything.
+What it deliberately does **not** do: manage accounts. It verifies tokens; it
+cannot issue, refresh or revoke one. A user who must be locked out is locked
+out at the Node API, and this service keeps honouring their existing access
+token until it expires — at most 15 minutes.
 
 Still on you before this is public:
 
-1. **Don't expose this port to the internet.** Anyone who can reach it can
-   spend the LLM budget, and there is no credential to stop them. Put it on a
-   private network with the Node API in front of it, or restrict it at the
-   firewall or reverse proxy.
+1. **Keep the port restricted anyway.** A token check is not a substitute for
+   a network boundary: unauthenticated traffic still reaches the process, and
+   any signed-in user can spend LLM budget up to their rate limit. Prefer a
+   private network with the Node API in front of it.
 2. **Terminate TLS.** Put it behind a reverse proxy with a real certificate —
    these requests carry someone's symptoms and location. Run it with
    `--proxy-headers --forwarded-allow-ips=<proxy ip>` so the rate limiter sees

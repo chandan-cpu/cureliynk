@@ -113,16 +113,17 @@ app.add_middleware(GZipMiddleware, minimum_size=1024)
 # explicit list rather than a wildcard because a browser origin that can reach
 # this endpoint can spend its LLM budget.
 #
-# `Authorization` is still allowed through: nothing here reads it, but clients
-# built against the earlier authenticated version keep sending it, and a
-# preflight that rejects the header would fail those requests outright.
+# `X-Auth-Error` has to be in `expose_headers` or a browser hides it from the
+# page even on an allowed origin, and the web client loses the difference
+# between "refresh the token and retry" and "send the user to sign in". Native
+# builds read it regardless — this line is what makes Expo web behave the same.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.allowed_origins,
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type"],
-    expose_headers=["X-Request-ID", "Retry-After"],
+    expose_headers=["X-Request-ID", "Retry-After", "X-Auth-Error"],
     max_age=600,
 )
 

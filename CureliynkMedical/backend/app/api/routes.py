@@ -4,8 +4,9 @@ Medical API routes.
 One endpoint: a symptom description in, a specialty / urgency / nearby-doctor
 recommendation out.
 
-Sign-in is not this service's job — the Node API owns accounts, tokens and
-sessions, and nothing here reads an `Authorization` header. What is left is
+Issuing tokens is not this service's job — the Node API owns accounts, sign-in
+and refresh — but verifying one is: the caller must present an access token
+signed with the shared secret before the pipeline runs. On top of that sit
 rate limiting, validation, and never echoing an internal failure back to the
 caller.
 """
@@ -14,6 +15,7 @@ import logging
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 
+from app.api.auth import require_principal
 from app.api.rate_limit import enforce_rate_limit
 from app.api.schemas import (
     ErrorResponse,
@@ -64,12 +66,21 @@ def _safe_urgency(value) -> str:
     response_model=MedicalQueryResponse,
     status_code=status.HTTP_200_OK,
     summary="Recommend a medical specialty and nearby doctors",
-    # Declared here rather than as a parameter because the endpoint has no use
-    # for its return value, and because router-level dependencies resolve
-    # first — a caller over budget is turned away before the pipeline is
-    # touched.
-    dependencies=[Depends(enforce_rate_limit)],
+    # Declared here rather than as parameters because the endpoint has no use
+    # for their return values, and because these resolve before the body —
+    # an unauthenticated or over-budget caller is turned away before the
+    # pipeline is touched.
+    #
+    # `enforce_rate_limit` depends on `require_principal` itself, so listing
+    # both is not what orders them; FastAPI caches a dependency per request,
+    # so the token is verified exactly once. It is spelled out because a route
+    # that requires a login should say so where the route is defined.
+    dependencies=[
+        Depends(require_principal),
+        Depends(enforce_rate_limit),
+    ],
     responses={
+        401: {"model": ErrorResponse, "description": "Missing or invalid token"},
         422: {"model": ErrorResponse, "description": "Invalid request"},
         429: {"model": ErrorResponse, "description": "Too many requests"},
         503: {"model": ErrorResponse, "description": "Assistant unavailable"},
