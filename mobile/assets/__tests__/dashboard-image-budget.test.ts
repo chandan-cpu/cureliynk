@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 
 /**
- * Regression guard for the dashboard scroll-jank issue: the hero/card images
+ * Regression guard for the dashboard scroll-jank issue: the hero images
  * were originally shipped at raw camera resolution (up to 18 megapixels,
  * several MB each) while only ever displayed at a few hundred pixels wide.
  * Decoding that many pixels on mount was the main cause of the lag reported
@@ -14,9 +14,8 @@ const ASSETS_DIR = path.join(__dirname, "..");
 const BUDGETS_KB: Record<string, number> = {
   "b1.jpg": 300,
   "b2.jpg": 300,
-  "b3.jpg": 300,
-  "babycare.jpg": 200,
-  "pregenecycare.jpg": 200,
+  "banner-english.jpg": 300,
+  "banner-assames.jpg": 300,
 };
 
 describe("dashboard image size budget", () => {

@@ -4,6 +4,8 @@ const Doctor = require("../models/Doctor");
 const Admin = require("../models/Admin");
 const { hashPassword, comparePassword } = require("../utils/password.utils");
 const { generateAccessToken, generateRefreshToken, verifyRefreshToken } = require("../utils/jwt.utils");
+const { generateResetToken, hashResetToken } = require("../utils/token.utils");
+const { sendPasswordResetEmail } = require("../utils/mail.utils");
 const { successResponse, errorResponse } = require("../utils/response.utils");
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -190,6 +192,13 @@ const login = async (req, res) => {
         // Doctor must be approved before login
         if (account.role === "doctor" && !account.isApproved) {
             return errorResponse(res, 403, "Your account is pending admin approval. Please wait for approval before logging in.");
+        }
+
+        // A Google-created account has no password to check. Say so, rather
+        // than returning "invalid password" for a password that was never set
+        // and leaving the user retyping a credential that cannot exist.
+        if (!account.password) {
+            return errorResponse(res, 409, "This account uses Google sign-in. Please continue with Google.");
         }
 
         // Verify password
@@ -408,6 +417,90 @@ const changePassword = async (req, res) => {
     }
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /api/v1/auth/forgot-password
+// ─────────────────────────────────────────────────────────────────────────────
+const forgotPassword = async (req, res) => {
+    // Identical response whether or not the email is registered — otherwise
+    // this endpoint becomes a way to enumerate accounts by email address.
+    const genericMessage = "If an account exists for that email, a password reset link has been sent.";
+
+    try {
+        const { email } = req.validatedBody;
+
+        const [userAccount, doctorAccount, adminAccount] = await Promise.all([
+            User.findOne({ email }),
+            Doctor.findOne({ email }),
+            Admin.findOne({ email }),
+        ]);
+        const account = userAccount || doctorAccount || adminAccount;
+
+        // No account, or a Google-only account with no password to reset.
+        if (!account || !account.password) {
+            return successResponse(res, 200, genericMessage);
+        }
+
+        const { token, hashedToken, expiresAt } = generateResetToken();
+        account.resetPasswordToken = hashedToken;
+        account.resetPasswordExpires = expiresAt;
+        await account.save();
+
+        const resetBaseUrl = process.env.PASSWORD_RESET_URL || "mobile://reset-password";
+        const resetUrl = `${resetBaseUrl}?token=${token}`;
+
+        try {
+            await sendPasswordResetEmail({ to: account.email, name: account.name, resetUrl });
+        } catch (mailError) {
+            console.error("[forgotPassword] failed to send reset email", mailError);
+            // Don't leave a valid, unusable token sitting on the account —
+            // the user can't retry until it expires otherwise.
+            account.resetPasswordToken = null;
+            account.resetPasswordExpires = null;
+            await account.save();
+            return errorResponse(res, 500, "Failed to send password reset email. Please try again.");
+        }
+
+        return successResponse(res, 200, genericMessage);
+    } catch (error) {
+        console.error("[forgotPassword]", error);
+        return errorResponse(res, 500, "Failed to process password reset request.");
+    }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /api/v1/auth/reset-password/:token
+// ─────────────────────────────────────────────────────────────────────────────
+const resetPassword = async (req, res) => {
+    try {
+        const { token } = req.validatedParams;
+        const { newPassword } = req.validatedBody;
+
+        const hashedToken = hashResetToken(token);
+
+        const [userAccount, doctorAccount, adminAccount] = await Promise.all([
+            User.findOne({ resetPasswordToken: hashedToken }).select("+resetPasswordExpires"),
+            Doctor.findOne({ resetPasswordToken: hashedToken }).select("+resetPasswordExpires"),
+            Admin.findOne({ resetPasswordToken: hashedToken }).select("+resetPasswordExpires"),
+        ]);
+        const account = userAccount || doctorAccount || adminAccount;
+
+        if (!account || !account.resetPasswordExpires || account.resetPasswordExpires < new Date()) {
+            return errorResponse(res, 400, "Password reset link is invalid or has expired.");
+        }
+
+        account.password = await hashPassword(newPassword);
+        account.resetPasswordToken = null;
+        account.resetPasswordExpires = null;
+        account.refreshToken = null; // force re-login on every device
+        await account.save();
+
+        return successResponse(res, 200, "Password has been reset successfully. Please login with your new password.");
+    } catch (error) {
+        console.error("[resetPassword]", error);
+        return errorResponse(res, 500, "Failed to reset password.");
+    }
+};
+
 module.exports = {
     registerUser,
     registerDoctor,
@@ -418,4 +511,6 @@ module.exports = {
     refreshToken,
     getMe,
     changePassword,
+    forgotPassword,
+    resetPassword,
 };

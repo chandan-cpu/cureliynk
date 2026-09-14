@@ -1,13 +1,12 @@
 {
   "expo": {
-    "name": "mobile",
+    "name": "CureLiynk",
     "slug": "mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "mobile",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.cureliynk.app"
@@ -20,7 +19,6 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "permissions": [
         "android.permission.RECORD_AUDIO",
@@ -56,6 +54,13 @@
         }
       ],
       [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "Allow Cureliynk to access your microphone for voice search and the AI assistant.",
+          "speechRecognitionPermission": "Allow Cureliynk to use speech recognition to turn your voice into text."
+        }
+      ],
+      [
         "expo-location",
         {
           "locationAlwaysAndWhenInUsePermission": "Allow Cureliynk to access your location to find nearby doctors and hospitals."
@@ -75,7 +80,12 @@
           "color": "#22C55E"
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-font",
+      "expo-image",
+      "expo-status-bar",
+      "expo-web-browser",
+      "expo-asset"
     ],
     "experiments": {
       "typedRoutes": true,

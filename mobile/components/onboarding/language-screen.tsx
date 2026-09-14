@@ -8,6 +8,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { LanguageOptionRow } from "@/components/onboarding/language-option-row";
 import { DEFAULT_LANGUAGE_ID, LANGUAGE_OPTIONS } from "@/constants/languages";
 import { setAppLanguage } from "@/i18n";
+import { requestPermissionGranted } from "@/lib/permissions";
 import { useThemeColors } from "@/lib/theme";
 
 export function LanguageScreen() {
@@ -15,10 +16,34 @@ export function LanguageScreen() {
   const { t } = useTranslation();
   const colors = useThemeColors();
   const [selectedId, setSelectedId] = useState(DEFAULT_LANGUAGE_ID);
+  // The system permission dialog can sit open for several seconds. Without
+  // this, a second tap during that window would run the whole handler again
+  // and push /login twice.
+  const [busy, setBusy] = useState(false);
 
   const handleNext = async () => {
+    if (busy) return;
+    setBusy(true);
+
     await setAppLanguage(selectedId);
-    router.push("/care-type");
+
+    // With the permissions page gone, this is the only place the app asks for
+    // location — and `useCurrentLocation` only ever *checks* the grant, so
+    // nothing else would ever prompt. The system dialog appears here, and
+    // returns immediately without one if the user has already answered.
+    //
+    // Denial is deliberately not a dead end: onboarding continues either way,
+    // and the nearby-doctors screen handles a denied grant with its own
+    // explanation and a link into Settings. Blocking sign-up on a location
+    // grant would be a worse trade than losing the feature.
+    try {
+      await requestPermissionGranted("location");
+    } catch {
+      // A prompt that throws — a misconfigured build, or a platform with no
+      // such permission — must not strand the user on this screen.
+    }
+
+    router.push("/login");
   };
 
   return (

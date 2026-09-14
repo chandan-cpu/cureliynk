@@ -103,6 +103,16 @@ const doctorSchema = new mongoose.Schema(
             default: null,
             select: false,
         },
+        resetPasswordToken: {
+            type: String,
+            default: null,
+            select: false,
+        },
+        resetPasswordExpires: {
+            type: Date,
+            default: null,
+            select: false,
+        },
         isApproved: {
             type: Boolean,
             default: false, // Admin must approve before doctor can login

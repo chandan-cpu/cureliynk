@@ -72,7 +72,26 @@ export async function apiRequest<T = undefined>(
     if (outcome.status === "refreshed") response = await send(outcome.accessToken);
   }
 
-  const envelope = (await response.json()) as ApiEnvelope<T>;
+  // Not every response that reaches here is ours. A proxy 502, a gateway
+  // timeout or a crash before the error handler runs returns HTML, and an
+  // unguarded `.json()` turns that into a SyntaxError escaping as something
+  // no caller is catching. `lib/medical-api` has always guarded this; this is
+  // the same treatment for the Node API.
+  let envelope: ApiEnvelope<T> | null = null;
+  try {
+    envelope = (await response.json()) as ApiEnvelope<T>;
+  } catch {
+    envelope = null;
+  }
+
+  if (!envelope) {
+    throw new ApiError(
+      response.status,
+      response.status >= 500
+        ? "The server is having trouble right now. Please try again shortly."
+        : "Something went wrong. Please try again.",
+    );
+  }
 
   if (!envelope.success) {
     throw new ApiError(response.status, envelope.message, envelope.errors);

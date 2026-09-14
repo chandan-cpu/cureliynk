@@ -9,10 +9,18 @@
       "distribution": "internal"
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_API_BASE_URL": "https://REPLACE-ME-staging-api.cureliynk.com",
+        "EXPO_PUBLIC_MEDICAL_API_BASE_URL": "https://REPLACE-ME-staging-assistant.cureliynk.com"
+      }
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_API_BASE_URL": "https://REPLACE-ME-api.cureliynk.com",
+        "EXPO_PUBLIC_MEDICAL_API_BASE_URL": "https://REPLACE-ME-assistant.cureliynk.com"
+      }
     }
   },
   "submit": {

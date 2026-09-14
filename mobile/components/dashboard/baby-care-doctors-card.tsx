@@ -26,7 +26,7 @@ export function BabyCareDoctorsCard() {
       className="flex-1 rounded-2xl overflow-hidden bg-blue-100 dark:bg-blue-500/20"
     >
       <Image
-        source={require("@/assets/babycare.jpg")}
+        source={require("@/assets/ccare.jpeg")}
         style={{ width: "100%", aspectRatio: PHOTO_ASPECT_RATIO }}
         contentFit="cover"
         transition={150}

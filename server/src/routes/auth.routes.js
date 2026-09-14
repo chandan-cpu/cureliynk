@@ -11,10 +11,12 @@ const {
     refreshToken,
     getMe,
     changePassword,
+    forgotPassword,
+    resetPassword,
 } = require("../controllers/auth.controller");
 
 const { authenticate } = require("../middleware/auth.middleware");
-const { validate } = require("../middleware/validateRequest");
+const { validate, validateParams } = require("../middleware/validateRequest");
 
 const {
     registerUserSchema,
@@ -24,6 +26,9 @@ const {
     googleAuthSchema,
     changePasswordSchema,
     refreshTokenSchema,
+    forgotPasswordSchema,
+    resetPasswordParamsSchema,
+    resetPasswordSchema,
 } = require("../validators/auth.validators");
 
 console.log("auth.routes.js loaded");
@@ -76,6 +81,27 @@ router.post("/google", validate(googleAuthSchema), googleAuth);
  * @access  Public
  */
 router.post("/refresh-token", validate(refreshTokenSchema), refreshToken);
+
+/**
+ * @route   POST /api/v1/auth/forgot-password
+ * @desc    Request a password reset link for any role (user, doctor, admin)
+ * @body    { email }
+ * @access  Public
+ */
+router.post("/forgot-password", validate(forgotPasswordSchema), forgotPassword);
+
+/**
+ * @route   POST /api/v1/auth/reset-password/:token
+ * @desc    Reset the account password using the token emailed by forgot-password
+ * @body    { newPassword }
+ * @access  Public
+ */
+router.post(
+    "/reset-password/:token",
+    validateParams(resetPasswordParamsSchema),
+    validate(resetPasswordSchema),
+    resetPassword
+);
 
 // ─────────────────────────────────────────────
 // PROTECTED ROUTES (Authentication required)

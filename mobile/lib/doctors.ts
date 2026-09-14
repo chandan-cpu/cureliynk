@@ -30,7 +30,13 @@ export type DoctorSearchResult = {
   doctors: Doctor[];
 };
 
-/** Public route (no auth) — Google Places search behind the backend, scoped by department. */
+/**
+ * Google Places search behind the backend, scoped by department.
+ *
+ * Private: the backend guards the whole /api/v1/chat router with `authenticate`
+ * because each call spends money on a Places text search. Without the token
+ * every search came back 401 and the results screen showed only "Try again".
+ */
 export async function findNearbyDoctors(
   department: Department,
   location: { lat: number; lng: number },
@@ -39,5 +45,6 @@ export async function findNearbyDoctors(
   return apiRequest<DoctorSearchResult>("/api/v1/chat/doctors", {
     method: "POST",
     body: { department, location, limit },
+    authenticated: true,
   });
 }

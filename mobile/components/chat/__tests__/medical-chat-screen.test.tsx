@@ -35,6 +35,17 @@ jest.mock("@/hooks/use-current-location", () => ({
   useCurrentLocation: () => mockLocation(),
 }));
 
+// The real hook imports `expo-speech-recognition`, a native module Jest has
+// nothing to run against; these tests don't exercise voice input.
+jest.mock("@/hooks/use-voice-input", () => ({
+  useVoiceInput: () => ({
+    state: { status: "idle" },
+    isSupported: false,
+    start: jest.fn(),
+    stop: jest.fn(),
+  }),
+}));
+
 const GRANTED = { state: { status: "granted", coords: { lat: 26.14, lng: 91.73 } }, retry: jest.fn() };
 const DENIED = { state: { status: "denied" }, retry: jest.fn() };
 

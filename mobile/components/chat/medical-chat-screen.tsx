@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from "react-native";
+import { Keyboard, KeyboardAvoidingView, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AssistantMessage } from "@/components/chat/assistant-message";
@@ -11,6 +11,7 @@ import { ChatHeader } from "@/components/chat/chat-header";
 import { ThinkingIndicator } from "@/components/chat/thinking-indicator";
 import { UserMessage } from "@/components/chat/user-message";
 import { useCurrentLocation } from "@/hooks/use-current-location";
+import { useKeyboardVisible } from "@/hooks/use-keyboard-visible";
 import { askMedicalAssistant, type ChatMessage } from "@/lib/chat";
 import { resolveLanguage } from "@/lib/languages";
 import { MedicalApiError } from "@/lib/medical-api";
@@ -26,6 +27,7 @@ export function MedicalChatScreen() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isThinking, setIsThinking] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
+  const keyboardVisible = useKeyboardVisible();
 
   // Location is optional. A user who declined the permission still gets a
   // specialty and an urgency — only the nearby-doctor list is missing — so
@@ -45,10 +47,20 @@ export function MedicalChatScreen() {
     };
   }, []);
 
+  // Opening the keyboard shortens the transcript; without this the last turn
+  // slides up out of view behind the composer instead of staying put.
+  useEffect(() => {
+    const subscription = Keyboard.addListener("keyboardDidShow", () => {
+      scrollRef.current?.scrollToEnd({ animated: true });
+    });
+
+    return () => subscription.remove();
+  }, []);
+
   const makeId = () => `m${nextId.current++}`;
 
   const send = useCallback(
-    async (text: string) => {
+    async (text: string, viaVoice = false) => {
       // One question at a time: the previous request is abandoned rather than
       // left running to spend rate-limit budget on an answer nobody wants.
       inFlight.current?.abort();
@@ -56,7 +68,7 @@ export function MedicalChatScreen() {
       const controller = new AbortController();
       inFlight.current = controller;
 
-      setMessages((current) => [...current, { id: makeId(), role: "user", text }]);
+      setMessages((current) => [...current, { id: makeId(), role: "user", text, viaVoice }]);
       setIsThinking(true);
 
       try {
@@ -106,12 +118,17 @@ export function MedicalChatScreen() {
   const isNewChat = messages.length === 0;
 
   return (
-    <SafeAreaView className="flex-1 bg-surface dark:bg-surface-dark" edges={["top", "bottom"]}>
-      <KeyboardAvoidingView
-        className="flex-1"
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-      >
-        <ChatHeader showBack={!isNewChat} />
+    // The avoider is the outermost element on purpose. It positions itself by
+    // measuring its own frame against the keyboard's, and that frame is read
+    // relative to its parent — so anything that insets it first (a SafeAreaView,
+    // a visible tab bar) makes it under-shoot by exactly that inset. Spanning
+    // the whole window keeps the arithmetic honest and needs no
+    // `keyboardVerticalOffset` fudge. `padding` is right on both platforms:
+    // where Android does resize the window for the keyboard, the re-measured
+    // frame no longer overlaps and the padding computes to zero on its own.
+    <KeyboardAvoidingView className="flex-1 bg-surface dark:bg-surface-dark" behavior="padding">
+      <SafeAreaView className="flex-1" edges={["top"]}>
+        <ChatHeader />
 
         {isNewChat ? (
           <ChatEmptyState onPickExample={(prompt) => send(prompt)} />
@@ -124,7 +141,8 @@ export function MedicalChatScreen() {
             showsVerticalScrollIndicator={false}
           >
             {messages.map((message) => {
-              if (message.role === "user") return <UserMessage key={message.id} text={message.text} />;
+              if (message.role === "user")
+                return <UserMessage key={message.id} text={message.text} viaVoice={message.viaVoice} />;
               if (message.role === "assistant")
                 return (
                   <AssistantMessage
@@ -153,21 +171,23 @@ export function MedicalChatScreen() {
         <ChatComposer
           isNewChat={isNewChat}
           isThinking={isThinking}
-          onSend={(text) => send(text)}
+          onSend={(text, viaVoice) => send(text, viaVoice)}
           onStop={stop}
         />
 
-        {isNewChat ? (
+        {isNewChat && !keyboardVisible ? (
           // Only the empty state carries the standing disclaimer; once there
-          // is an answer on screen the emergency ones carry their own.
+          // is an answer on screen the emergency ones carry their own. It also
+          // steps aside while typing rather than wedging itself between the
+          // composer and the keyboard.
           <View className="px-6 pb-3">
             <Text className="text-center text-[11px] leading-4 text-muted dark:text-muted-dark opacity-80">
               {t("chat.disclaimer")}
             </Text>
           </View>
         ) : null}
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 }
 

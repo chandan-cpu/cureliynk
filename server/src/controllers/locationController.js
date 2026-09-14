@@ -40,8 +40,8 @@ const autocomplete = async (req, res) => {
 
     res.json({ success: true, suggestions });
   } catch (error) {
-    console.error("Autocomplete error:", error.message);
-    res.status(500).json({ success: false, message: error.message });
+    console.error("Autocomplete error:", error);
+    res.status(502).json({ success: false, message: "Address lookup is unavailable right now." });
   }
 };
 
@@ -79,8 +79,8 @@ const geocode = async (req, res) => {
       placeId: place.place_id,
     });
   } catch (error) {
-    console.error("Geocode error:", error.message);
-    res.status(500).json({ success: false, message: error.message });
+    console.error("Geocode error:", error);
+    res.status(502).json({ success: false, message: "Address lookup is unavailable right now." });
   }
 };
 
@@ -118,8 +118,8 @@ const reverseGeocode = async (req, res) => {
       placeId: place.place_id,
     });
   } catch (error) {
-    console.error("Reverse geocode error:", error.message);
-    res.status(500).json({ success: false, message: error.message });
+    console.error("Reverse geocode error:", error);
+    res.status(502).json({ success: false, message: "Address lookup is unavailable right now." });
   }
 };
 

@@ -2,6 +2,8 @@ import type { ComponentProps } from "react";
 import type { Ionicons } from "@expo/vector-icons";
 import type { ImageSourcePropType } from "react-native";
 
+import type { SupportedLanguage } from "@/i18n";
+
 export type HeroSlideId = "askAi" | "pregnancy" | "insurance";
 
 export type HeroSlide = {
@@ -14,11 +16,22 @@ export type HeroSlide = {
   image?: ImageSourcePropType;
   /** A fully-designed banner with its own text/CTA already baked in — rendered
    *  as-is (no overlay, no injected text) at its own aspect ratio instead of
-   *  being cropped into the shared landscape frame. */
-  plainImage?: ImageSourcePropType;
+   *  being cropped into the shared landscape frame. Can depend on the app's
+   *  current language, e.g. a banner with baked-in translated copy. */
+  plainImage?: ImageSourcePropType | ((language: SupportedLanguage) => ImageSourcePropType);
   /** Width/height ratio of `plainImage`, used to size its card without cropping. */
   aspectRatio?: number;
 };
+
+/** The insurance banner has its copy baked into the image, so it needs one
+ *  asset per language rather than a translation string. Only Assamese has a
+ *  dedicated version today; every other supported language falls back to
+ *  the English banner. */
+function insuranceBanner(language: SupportedLanguage): ImageSourcePropType {
+  return language === "as"
+    ? require("@/assets/banner-assames.jpg")
+    : require("@/assets/banner-english.jpg");
+}
 
 export const HERO_SLIDES: HeroSlide[] = [
   {
@@ -33,7 +46,7 @@ export const HERO_SLIDES: HeroSlide[] = [
   },
   {
     id: "insurance",
-    plainImage: require("@/assets/b3.jpg"),
-    aspectRatio: 1086 / 1448,
+    plainImage: insuranceBanner,
+    aspectRatio: 1300 / 732,
   },
 ];

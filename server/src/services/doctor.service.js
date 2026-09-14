@@ -76,7 +76,7 @@ exports.findNearbyDoctors = async ({ department, location, limit = 5 }) => {
       address: place.formatted_address || place.vicinity || "Address not available",
       rating: place.rating || null,
       reviewsCount: place.user_ratings_total || 0,
-      distanceKm: distanceKm ? Number(distanceKm.toFixed(1)) : null,
+      distanceKm: distanceKm !== null ? Number(distanceKm.toFixed(1)) : null,
       placeId: place.place_id,
       mapsUrl: place.place_id
         ? `https://www.google.com/maps/search/?api=1&query_place_id=${place.place_id}&query=${encodeURIComponent(place.name)}`

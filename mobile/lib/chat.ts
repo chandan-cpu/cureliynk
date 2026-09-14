@@ -49,7 +49,7 @@ export type AssistantAnswer = {
 };
 
 export type ChatMessage =
-  | { id: string; role: "user"; text: string }
+  | { id: string; role: "user"; text: string; viaVoice?: boolean }
   | { id: string; role: "assistant"; answer: AssistantAnswer }
   /** A failed turn, shown in place of an answer with a retry affordance. */
   | { id: string; role: "error"; messageKey: string; canRetry: boolean };

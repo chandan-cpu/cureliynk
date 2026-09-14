@@ -49,6 +49,27 @@ const userSchema = new mongoose.Schema(
             type: String,
             default: null,
         },
+        /**
+         * IANA zone name (e.g. "Asia/Kolkata") reported by the device.
+         *
+         * Schedules store wall-clock times like "08:00", which only identify a
+         * moment once paired with a zone. The device is the source of truth and
+         * refreshes this on launch; the server keeps it so that history and
+         * caregiver alerts can be rendered in the user's own day boundaries.
+         */
+        timezone: {
+            type: String,
+            trim: true,
+            default: "Asia/Kolkata",
+        },
+        /** Optional second contact notified when a dose goes unanswered. */
+        caregiverEmail: {
+            type: String,
+            lowercase: true,
+            trim: true,
+            default: null,
+            match: [/^\S+@\S+\.\S+$/, "Please provide a valid caregiver email address"],
+        },
         role: {
             type: String,
             default: "user",
@@ -56,6 +77,16 @@ const userSchema = new mongoose.Schema(
         },
         refreshToken: {
             type: String,
+            default: null,
+            select: false,
+        },
+        resetPasswordToken: {
+            type: String,
+            default: null,
+            select: false,
+        },
+        resetPasswordExpires: {
+            type: Date,
             default: null,
             select: false,
         },

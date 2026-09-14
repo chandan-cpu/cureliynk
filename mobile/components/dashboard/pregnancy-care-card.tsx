@@ -26,7 +26,7 @@ export function PregnancyCareCard() {
       className="flex-1 rounded-2xl overflow-hidden bg-pink-100 dark:bg-pink-500/20"
     >
       <Image
-        source={require("@/assets/pregenecycare.jpg")}
+        source={require("@/assets/pcare.jpeg")}
         style={{ width: "100%", aspectRatio: PHOTO_ASPECT_RATIO }}
         contentFit="cover"
         transition={150}

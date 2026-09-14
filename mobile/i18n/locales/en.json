@@ -89,7 +89,43 @@
       "submit": "Create Account",
       "alreadyHaveAccount": "Already have an account?",
       "login": "Login"
+    },
+    "forgotPassword": {
+      "title": "Forgot Password?",
+      "subtitle": "Enter the email on your account and we'll send you a link to reset your password.",
+      "emailLabel": "Email Address",
+      "emailPlaceholder": "you@example.com",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Enter a valid email",
+      "submit": "Send Reset Link",
+      "genericError": "Something went wrong. Please try again.",
+      "sentTitle": "Check your email",
+      "sentSubtitle": "If an account exists for {{email}}, we've sent a link to reset your password.",
+      "backToLogin": "Back to Login"
+    },
+    "resetPassword": {
+      "title": "Reset Password",
+      "subtitle": "Choose a new password for your account.",
+      "passwordLabel": "New Password",
+      "passwordPlaceholder": "Enter a new password",
+      "passwordRule": "8+ chars with upper, lower, number & special character",
+      "confirmPasswordLabel": "Confirm New Password",
+      "confirmPasswordPlaceholder": "Re-enter your new password",
+      "mismatch": "Passwords do not match",
+      "submit": "Reset Password",
+      "successTitle": "Password reset",
+      "successMessage": "Your password has been reset. Please login with your new password.",
+      "failTitle": "Reset failed",
+      "genericError": "Something went wrong. Please try again.",
+      "invalidLinkTitle": "Invalid or expired link",
+      "invalidLinkSubtitle": "This password reset link is invalid or has expired. Please request a new one.",
+      "requestNewLink": "Request New Link"
     }
+  },
+  "tabs": {
+    "home": "Home",
+    "askAi": "AI Chat",
+    "more": "More"
   },
   "dashboard": {
     "hero": {
@@ -215,6 +251,16 @@
       "rejected": "I couldn't read that question. Try describing your symptoms in a sentence or two.",
       "unavailable": "The assistant is busy right now. Please try again in a moment.",
       "generic": "Something went wrong. Please try again."
+    },
+    "voice": {
+      "start": "Ask by voice",
+      "stop": "Stop recording",
+      "listening": "Listening…",
+      "askedByVoice": "Asked by voice",
+      "permissionTitle": "Microphone access needed",
+      "permissionBody": "Allow microphone and speech recognition access in your device settings to ask by voice.",
+      "unavailableTitle": "Voice input isn't available",
+      "unavailableBody": "This device or language isn't supported for voice input right now. Please type your question instead."
     }
   },
   "profile": {
@@ -259,5 +305,108 @@
     "locationUnknown": "Not set",
     "signOut": "Sign out",
     "version": "CureLiynk AI · v{{version}}"
+  },
+  "medications": {
+    "title": "Medicine Reminder",
+    "today": {
+      "title": "Today's Doses",
+      "empty": "No doses scheduled for today.",
+      "emptyHint": "Add a medicine to start getting reminders.",
+      "addMedicine": "Add medicine",
+      "markTaken": "Mark as taken",
+      "snooze": "Snooze 10 min",
+      "taken": "Taken",
+      "missed": "Missed",
+      "snoozed": "Snoozed",
+      "pending": "Pending",
+      "overdue": "Overdue",
+      "allDone": "All doses done for today.",
+      "viewHistory": "History",
+      "viewRefills": "Refills",
+      "manage": "Manage medicines",
+      "dueCount": "{{count}} doses due today"
+    },
+    "form": {
+      "addTitle": "Add Medicine",
+      "editTitle": "Edit Medicine",
+      "name": "Medicine name",
+      "namePlaceholder": "e.g. Metformin",
+      "dosage": "Dosage",
+      "dosagePlaceholder": "e.g. 500 mg",
+      "formLabel": "Form",
+      "quantity": "Quantity remaining",
+      "threshold": "Refill alert below",
+      "scheduleTitle": "Schedule",
+      "frequency": "Frequency",
+      "daily": "Daily",
+      "everyNHours": "Every few hours",
+      "weekly": "Weekly",
+      "times": "Times of day",
+      "addTime": "Add time",
+      "interval": "Hours between doses",
+      "days": "Days of week",
+      "startDate": "Starts",
+      "endDate": "Ends (optional)",
+      "noEndDate": "No end date",
+      "save": "Save",
+      "saving": "Saving…",
+      "delete": "Delete medicine",
+      "deleteTitle": "Delete this medicine?",
+      "deleteBody": "Its reminders and schedule are removed. Your dose history is kept.",
+      "cancel": "Cancel",
+      "confirmDelete": "Delete",
+      "nameRequired": "Enter a medicine name.",
+      "dosageRequired": "Enter a dosage.",
+      "timesRequired": "Add at least one time.",
+      "daysRequired": "Select at least one day."
+    },
+    "history": {
+      "title": "Adherence",
+      "last30": "Last 30 days",
+      "adherenceRate": "Adherence",
+      "taken": "Taken",
+      "missed": "Missed",
+      "empty": "No dose history yet."
+    },
+    "refills": {
+      "title": "Refill Alerts",
+      "empty": "No medicines need refilling.",
+      "emptyHint": "A medicine appears here when its stock drops to the alert level.",
+      "remaining": "{{count}} left",
+      "threshold": "Alert at {{count}}",
+      "restock": "Update stock"
+    },
+    "permission": {
+      "title": "Turn on reminders",
+      "body": "Cureliynk needs notification permission to remind you when a dose is due.",
+      "enable": "Enable notifications",
+      "expoGoTitle": "Reminders need a development build",
+      "expoGoBody": "Notifications cannot be scheduled inside Expo Go. Run a development build to test reminders."
+    },
+    "forms": {
+      "tablet": "Tablet",
+      "capsule": "Capsule",
+      "syrup": "Syrup",
+      "injection": "Injection",
+      "drops": "Drops",
+      "inhaler": "Inhaler",
+      "cream": "Cream",
+      "other": "Other"
+    },
+    "weekdays": {
+      "sun": "Sun",
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat"
+    },
+    "errors": {
+      "load": "Could not load your medicines.",
+      "save": "Could not save. Please try again.",
+      "retry": "Try again",
+      "offline": "Saved on this device. It will sync when you are back online."
+    }
   }
 }

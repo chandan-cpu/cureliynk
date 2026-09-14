@@ -210,6 +210,28 @@ const refreshTokenSchema = z.object({
 });
 
 // ─────────────────────────────────────────────
+// Forgot Password Schema
+// ─────────────────────────────────────────────
+
+const forgotPasswordSchema = z.object({
+    email: emailField,
+});
+
+// ─────────────────────────────────────────────
+// Reset Password Schema
+// ─────────────────────────────────────────────
+
+const resetPasswordParamsSchema = z.object({
+    token: z
+        .string({ required_error: "Reset token is required" })
+        .min(1, "Reset token cannot be empty"),
+});
+
+const resetPasswordSchema = z.object({
+    newPassword: passwordField,
+});
+
+// ─────────────────────────────────────────────
 // Admin — Approve Doctor Schema
 // ─────────────────────────────────────────────
 
@@ -243,6 +265,9 @@ module.exports = {
     googleAuthSchema,
     changePasswordSchema,
     refreshTokenSchema,
+    forgotPasswordSchema,
+    resetPasswordParamsSchema,
+    resetPasswordSchema,
     approveDoctorSchema,
     toggleUserStatusSchema,
 };

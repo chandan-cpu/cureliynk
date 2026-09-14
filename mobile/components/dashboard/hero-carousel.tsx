@@ -17,6 +17,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { HERO_SLIDES, type HeroSlide, type HeroSlideId } from "@/constants/heroSlides";
+import type { SupportedLanguage } from "@/i18n";
 import { useThemeColors } from "@/lib/theme";
 
 const SIDE_MARGIN = 20;
@@ -55,7 +56,7 @@ type HeroSlideCardProps = {
 };
 
 function HeroSlideCard({ slide, index, scrollX, slideWidth, containerHeight }: HeroSlideCardProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useSlideNavigation();
   const colors = useThemeColors();
   const step = slideWidth + SLIDE_GAP;
@@ -71,10 +72,14 @@ function HeroSlideCard({ slide, index, scrollX, slideWidth, containerHeight }: H
   if (slide.plainImage) {
     // Already a fully-designed banner with its own text/CTA — shown uncropped
     // at its own aspect ratio, no overlay or injected copy on top of it.
+    const resolvedImage =
+      typeof slide.plainImage === "function"
+        ? slide.plainImage(i18n.language as SupportedLanguage)
+        : slide.plainImage;
     const cardHeight = Math.min(slideWidth / (slide.aspectRatio ?? 1), PLAIN_IMAGE_MAX_HEIGHT);
     content = (
       <View style={{ width: slideWidth, height: cardHeight, borderRadius: 20, overflow: "hidden", backgroundColor: colors.surface }}>
-        <Image source={slide.plainImage} style={{ width: "100%", height: "100%" }} contentFit="contain" transition={150} />
+        <Image source={resolvedImage} style={{ width: "100%", height: "100%" }} contentFit="contain" transition={150} />
       </View>
     );
   } else {

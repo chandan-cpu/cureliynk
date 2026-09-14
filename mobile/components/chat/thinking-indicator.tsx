@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Animated, Easing, Text, View } from "react-native";
 
@@ -12,7 +12,11 @@ import { useIndicScript } from "@/components/chat/chat-text";
 export function ThinkingIndicator() {
   const { t } = useTranslation();
   const indic = useIndicScript();
-  const pulse = useRef(new Animated.Value(0.35)).current;
+  // useState rather than useRef: reading a ref during render is what the
+  // React Compiler lint rules forbid, and `useRef(new Animated.Value(…))`
+  // also built a throwaway Animated.Value on every single render. A lazy
+  // useState initialiser runs exactly once, which is what was always meant.
+  const [pulse] = useState(() => new Animated.Value(0.35));
 
   useEffect(() => {
     const loop = Animated.loop(

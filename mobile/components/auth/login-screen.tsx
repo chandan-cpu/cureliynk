@@ -120,10 +120,7 @@ export function LoginScreen() {
             autoComplete="current-password"
           />
 
-          <TouchableOpacity
-            className="self-end"
-            onPress={() => Alert.alert(t("auth.login.forgotPassword"), "Password reset isn't available yet.")}
-          >
+          <TouchableOpacity className="self-end" onPress={() => router.push("/forgot-password")}>
             <Text className="text-brand-dark dark:text-brand text-xs font-semibold">
               {t("auth.login.forgotPassword")}
             </Text>

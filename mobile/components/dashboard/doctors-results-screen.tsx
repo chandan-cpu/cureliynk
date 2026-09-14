@@ -18,26 +18,49 @@ export function DoctorsResultsScreen() {
   const colors = useThemeColors();
   const { department, title } = useLocalSearchParams<{ department: Department; title: string }>();
   const { state: locationState, retry: retryLocation } = useCurrentLocation();
-  const [requestState, setRequestState] = useState<RequestState>({ status: "loading" });
+  // Bumped by "Try again" to ask for the same search over again. It is part
+  // of the request key, so retrying genuinely re-runs the effect — the old
+  // retry only set the state to "loading" and left the spinner up forever,
+  // because neither dependency of the effect changed.
+  const [attempt, setAttempt] = useState(0);
+
+  // What the current props and location describe. Null while there is no
+  // location to search around.
+  const requestKey =
+    locationState.status === "granted"
+      ? `${attempt}|${department}|${locationState.coords.lat},${locationState.coords.lng}`
+      : null;
+
+  const [resolved, setResolved] = useState<{ key: string; state: RequestState } | null>(null);
+
+  // Derived during render rather than assigned from inside the effect. A
+  // result carrying an older key belongs to a search we have moved on from,
+  // so it reads as "loading" immediately — no stale doctors on screen for a
+  // frame, and no setState in an effect body triggering a cascading render.
+  const requestState: RequestState =
+    resolved !== null && resolved.key === requestKey
+      ? resolved.state
+      : { status: "loading" };
 
   useEffect(() => {
-    if (locationState.status !== "granted") return;
+    if (locationState.status !== "granted" || requestKey === null) return;
 
     let cancelled = false;
-    setRequestState({ status: "loading" });
 
     findNearbyDoctors(department, locationState.coords)
       .then((result) => {
-        if (!cancelled) setRequestState({ status: "success", doctors: result.doctors });
+        if (!cancelled) {
+          setResolved({ key: requestKey, state: { status: "success", doctors: result.doctors } });
+        }
       })
       .catch(() => {
-        if (!cancelled) setRequestState({ status: "error" });
+        if (!cancelled) setResolved({ key: requestKey, state: { status: "error" } });
       });
 
     return () => {
       cancelled = true;
     };
-  }, [department, locationState]);
+  }, [department, locationState, requestKey]);
 
   const renderBody = () => {
     if (locationState.status === "denied") {
@@ -75,7 +98,7 @@ export function DoctorsResultsScreen() {
             {t("dashboard.doctorsResults.genericError")}
           </Text>
           <TouchableOpacity
-            onPress={locationState.status === "error" ? retryLocation : () => setRequestState({ status: "loading" })}
+            onPress={locationState.status === "error" ? retryLocation : () => setAttempt((n) => n + 1)}
             className="bg-brand-dark dark:bg-brand rounded-full px-5 py-2.5 mt-2"
           >
             <Text className="text-white dark:text-[#052E16] text-sm font-semibold">

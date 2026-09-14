@@ -13,11 +13,21 @@ const hashPassword = async (plainPassword) => {
 
 /**
  * Compare a plain-text password with a hashed password
+ *
+ * An account created through Google sign-in has no `password` field at all,
+ * and bcrypt throws "Illegal arguments" rather than returning false when the
+ * hash is undefined — which surfaced to the user as a 500. A missing hash
+ * means "no password will ever match this account", so answer that directly.
+ *
  * @param {string} plainPassword
  * @param {string} hashedPassword
  * @returns {Promise<boolean>}
  */
 const comparePassword = async (plainPassword, hashedPassword) => {
+    if (typeof plainPassword !== "string" || typeof hashedPassword !== "string") {
+        return false;
+    }
+
     return await bcrypt.compare(plainPassword, hashedPassword);
 };
 

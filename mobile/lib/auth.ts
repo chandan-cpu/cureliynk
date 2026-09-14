@@ -51,6 +51,21 @@ export async function registerUser(input: RegisterUserInput): Promise<AuthUser> 
   });
 }
 
+/** Same response whether or not the email is registered, so there's nothing to branch on here. */
+export async function requestPasswordReset(email: string): Promise<void> {
+  await apiRequest("/api/v1/auth/forgot-password", {
+    method: "POST",
+    body: { email },
+  });
+}
+
+export async function resetPassword(token: string, newPassword: string): Promise<void> {
+  await apiRequest(`/api/v1/auth/reset-password/${encodeURIComponent(token)}`, {
+    method: "POST",
+    body: { newPassword },
+  });
+}
+
 export async function logout(): Promise<void> {
   try {
     await apiRequest("/api/v1/auth/logout", { method: "POST", authenticated: true });
