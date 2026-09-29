@@ -17,6 +17,7 @@ from app.core.doctor_router import DoctorRouter
 from app.core.pipeline import MedicalPipeline
 from app.providers.geoapify_geocoding_provider import GeoapifyGeocondingProvider
 from app.providers.mongodb_specialist_provider import MongoDBSpecialistProvider
+from app.services.response_generator import generate_final_response
 
 
 logger = logging.getLogger(__name__)
@@ -63,6 +64,8 @@ class MedicalApplication:
 
         self.router = DoctorRouter(llm=llm)
 
+        self.final_response = generate_final_response
+
         # Specialist provider
 
         self.SpecialProvider = GeoapifySpecialistProvider()
@@ -88,27 +91,37 @@ class MedicalApplication:
 
         result = self.pipeline.process(query=query.strip())
 
+        # Find nearby specialist providers.
+        # Location is optional: without it the user still gets a specialty and
+        # an urgency, just no doctor list.
+        
+        result["nearby_specialists"] = self._find_nearby(
+                    doctor=result.get("doctor") or {},
+                    latitude=latitude,
+                    longitude=longitude,
+                )
+
+        # Generate natural conversational response
+
+        result["response"] = self.final_response(
+            query=query.strip(),
+            doctor_result=result.get("doctor") or {},
+            llm=self.llm,
+        )
+
         # The retrieval block is the raw knowledge-base text used to reach the
         # recommendation. It is large, it is not shown to anyone, and leaving
         # it on the result means it gets translated and serialised for no
         # reason - so drop it once routing is done.
         result.pop("retrieval", None)
 
-        # Find nearby specialist providers.
-        # Location is optional: without it the user still gets a specialty and
-        # an urgency, just no doctor list.
-
-        result["nearby_specialists"] = self._find_nearby(
-            doctor=result.get("doctor") or {},
-            latitude=latitude,
-            longitude=longitude,
-        )
 
         # Translate final result
 
         result = self.translation_service.translate_result(result=result,language=language,)
 
         # Return final response
+        print(result)
 
         return result
 

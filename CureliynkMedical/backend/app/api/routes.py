@@ -25,6 +25,9 @@ from app.api.schemas import (
 from app.api.dependencies import get_application
 from app.services.application import MedicalApplication
 
+from fastapi import Query
+from app.services.laboratory_service import LaboratoryService
+
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +36,8 @@ router = APIRouter(
     prefix="/api/v1/medical",
     tags=["Medical Assistant"],
 )
+
+laboratory_service = LaboratoryService()
 
 
 # Used when the router could not produce a recommendation at all. Sending a
@@ -167,3 +172,42 @@ def medical_query(
 
         request_id=request_id,
     )
+
+
+@router.get(
+    "/laboratories/nearby",
+    summary="Find nearby medical laboratories",
+)
+def nearby_laboratories(
+    latitude: float = Query(...),
+    longitude: float = Query(...),
+    radius_km: float = Query(10.0, gt=0, le=50),
+    limit: int = Query(10, gt=0, le=50),
+):
+    """
+    Find medical laboratories near the user's current location.
+    """
+
+    try:
+        laboratories = laboratory_service.find_nearby(
+            latitude=latitude,
+            longitude=longitude,
+            radius_km=radius_km,
+            limit=limit,
+        )
+
+        return {
+            "count": len(laboratories),
+            "laboratories": laboratories,
+        }
+
+    except Exception:
+        logger.exception("Laboratory search failed")
+
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=(
+                "Laboratory search is temporarily unavailable. "
+                "Please try again in a moment."
+            ),
+        )

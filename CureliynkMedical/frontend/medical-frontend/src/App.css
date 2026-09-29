@@ -1,0 +1,321 @@
+/* =========================================
+   LABORATORY ENTRY
+========================================= */
+
+.laboratory-entry {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.laboratory-entry-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  padding: 16px 18px;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+
+  background: #ffffff;
+
+  cursor: pointer;
+
+  text-align: left;
+
+  box-sizing: border-box;
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.laboratory-entry-button:hover {
+  transform: translateY(-1px);
+
+  border-color: #cbd5e1;
+
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
+}
+
+.laboratory-entry-icon {
+  width: 44px;
+  height: 44px;
+
+  min-width: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  background: #f1f5f9;
+}
+
+.laboratory-entry-text {
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.laboratory-entry-text strong {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.laboratory-entry-text span {
+  font-size: 13px;
+  line-height: 1.4;
+
+  color: #64748b;
+}
+
+.laboratory-entry-arrow {
+  font-size: 22px;
+
+  color: #64748b;
+}
+
+
+/* =========================================
+   LABORATORY RESULTS
+========================================= */
+
+.laboratory-loading {
+  padding: 60px 20px;
+
+  text-align: center;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+
+  background: #ffffff;
+}
+
+.laboratory-loading h3 {
+  margin: 15px 0 5px;
+}
+
+.laboratory-loading p {
+  margin: 0;
+
+  color: #64748b;
+}
+
+.laboratory-spinner {
+  animation: laboratory-spin 1s linear infinite;
+}
+
+@keyframes laboratory-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* Count */
+
+.laboratory-count {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  margin-bottom: 16px;
+
+  color: #64748b;
+
+  font-size: 14px;
+}
+
+
+/* List */
+
+.laboratory-list {
+  display: flex;
+  flex-direction: column;
+
+  gap: 14px;
+}
+
+
+/* Card */
+
+.laboratory-card {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 16px;
+
+  padding: 20px;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 14px;
+
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+
+  box-sizing: border-box;
+}
+
+.laboratory-icon {
+  width: 48px;
+  height: 48px;
+
+  min-width: 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  background: #f1f5f9;
+}
+
+.laboratory-card-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.laboratory-card h3 {
+  margin: 0 0 5px;
+
+  font-size: 17px;
+  line-height: 1.4;
+}
+
+.laboratory-type {
+  margin: 0 0 8px;
+
+  font-size: 13px;
+
+  color: #64748b;
+}
+
+.laboratory-address {
+  margin: 0 0 14px;
+
+  font-size: 14px;
+  line-height: 1.5;
+
+  color: #475569;
+}
+
+
+/* Map button */
+
+.laboratory-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.laboratory-map-button {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 7px;
+
+  padding: 9px 14px;
+
+  border-radius: 8px;
+
+  background: #2563eb;
+
+  color: #ffffff;
+
+  text-decoration: none;
+
+  font-size: 13px;
+
+  transition: opacity 0.15s ease;
+}
+
+.laboratory-map-button:hover {
+  opacity: 0.9;
+}
+
+
+/* Error / Empty */
+
+.laboratory-error,
+.laboratory-empty {
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  padding: 50px 20px;
+
+  text-align: center;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 16px;
+
+  background: #ffffff;
+}
+
+.laboratory-error p,
+.laboratory-empty p {
+  margin: 0;
+
+  color: #64748b;
+}
+
+.primary-button {
+  padding: 10px 16px;
+
+  border: none;
+  border-radius: 8px;
+
+  background: #2563eb;
+
+  color: #ffffff;
+
+  cursor: pointer;
+}
+
+
+/* Mobile */
+
+@media (max-width: 600px) {
+
+  .laboratory-card {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .laboratory-icon {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+  }
+
+  .laboratory-card h3 {
+    font-size: 15px;
+  }
+
+  .laboratory-address {
+    font-size: 13px;
+  }
+
+  .laboratory-entry-text span {
+    font-size: 12px;
+  }
+
+}

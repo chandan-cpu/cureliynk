@@ -22,6 +22,11 @@ class Settings(BaseSettings):
     # headers, and refuses to start with an insecure configuration.
     ENVIRONMENT: str = "development"
 
+    # MongoDB
+    MONGODB_URI: str
+    MONGODB_DATABASE: str
+    MONGODB_COLLECTION: str
+
     # Data
 
     CHUNK_DATA: Path = (

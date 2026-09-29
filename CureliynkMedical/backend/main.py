@@ -21,20 +21,49 @@ from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
+# ===============================
+# API ROUTES
+# ===============================
+
+from app.api.routes import router
+from app.api.doctor_routes import router as doctor_router
+from app.api.laboratory_routes import router as laboratory_router
+
+# ===============================
+# APPLICATION DEPENDENCIES
+# ===============================
+
 from app.api.dependencies import get_application
+
+# ===============================
+# MIDDLEWARE
+# ===============================
+
 from app.api.middleware import (
     RequestContextMiddleware,
     SecurityHeadersMiddleware,
 )
-from app.api.routes import router
+
+# ===============================
+# CONFIGURATION
+# ===============================
+
 from app.config.logging import configure_logging
 from app.config.settings import settings
 
+
+# ===============================
+# LOGGING
+# ===============================
 
 configure_logging()
 
 logger = logging.getLogger(__name__)
 
+
+# ===============================
+# APPLICATION LIFESPAN
+# ===============================
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -42,9 +71,8 @@ async def lifespan(app: FastAPI):
     Refuse to start on an insecure config, then load the models once.
 
     Warming the pipeline here instead of on the first request means the
-    embedding model, the reranker and the BM25 index are in memory before the
-    port accepts traffic - otherwise the first user to open the chat waits out
-    a multi-minute model load and times out.
+    embedding model, the reranker and the BM25 index are in memory before
+    the port accepts traffic.
     """
 
     settings.validate_runtime_security()
@@ -61,8 +89,8 @@ async def lifespan(app: FastAPI):
         logger.info("Medical pipeline ready.")
 
     except Exception:
-        # Log it and keep serving: /health/ready reports unready and requests
-        # fail with a clean 503, instead of the process crash-looping.
+        # Log it and keep serving: /health/ready reports unready and
+        # requests fail with a clean 503.
         logger.exception(
             "Medical pipeline failed to load. The service will start but "
             "/api/v1/medical/query will return 503."
@@ -73,6 +101,10 @@ async def lifespan(app: FastAPI):
     logger.info("Shutting down.")
 
 
+# ===============================
+# FASTAPI APPLICATION
+# ===============================
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.API_VERSION,
@@ -82,8 +114,9 @@ app = FastAPI(
         "and doctor types."
     ),
     lifespan=lifespan,
-    # The schema names every route, field and error shape. Handy in
-    # development, an inventory for an attacker in production.
+
+    # The schema names every route, field and error shape.
+    # Handy in development, an inventory for an attacker in production.
     docs_url=None if settings.is_production else "/docs",
     redoc_url=None,
     openapi_url=None if settings.is_production else "/openapi.json",
@@ -97,21 +130,25 @@ app = FastAPI(
 #
 #   TrustedHost -> CORS -> GZip -> SecurityHeaders -> RequestContext -> route
 #
-# which is the order that matters: the host check runs before any body is
-# read, preflights are answered before anything expensive, and every response
-# that reaches a route carries both the security headers and a request id.
 # ===============================
 
 app.add_middleware(RequestContextMiddleware)
 
 app.add_middleware(SecurityHeadersMiddleware)
 
-app.add_middleware(GZipMiddleware, minimum_size=1024)
+app.add_middleware(
+    GZipMiddleware,
+    minimum_size=1024,
+)
+
+
+# ===============================
+# CORS
+# ===============================
 
 # Native mobile builds send no Origin header, so CORS never applies to them.
-# This allowlist exists for the Vite web frontend and Expo web; it stays an
-# explicit list rather than a wildcard because a browser origin that can reach
-# this endpoint can spend its LLM budget.
+#
+# This allowlist exists for the Vite web frontend and Expo web.
 #
 # `X-Auth-Error` has to be in `expose_headers` or a browser hides it from the
 # page even on an allowed origin, and the web client loses the difference
@@ -127,8 +164,11 @@ app.add_middleware(
     max_age=600,
 )
 
-# Rejects requests whose Host header is not one we serve, which is what stops
-# DNS-rebinding and cache-poisoning tricks against a public deployment.
+
+# ===============================
+# TRUSTED HOST
+# ===============================
+
 app.add_middleware(
     TrustedHostMiddleware,
     allowed_hosts=settings.allowed_hosts,
@@ -137,9 +177,6 @@ app.add_middleware(
 
 # ===============================
 # ERROR HANDLERS
-#
-# Every failure returns the same JSON shape - a "detail" string plus the
-# request id - so the clients only ever have to parse one thing.
 # ===============================
 
 def _request_id(request: Request) -> str | None:
@@ -170,8 +207,7 @@ async def validation_exception_handler(
     Turn Pydantic's error list into one readable sentence.
 
     The field/message pairs are echoed back for debugging, but the offending
-    input values are not - those are the user's own symptom text, and there is
-    no reason to bounce health data back through an error path.
+    input values are not.
     """
 
     errors = [
@@ -186,11 +222,13 @@ async def validation_exception_handler(
         for error in exc.errors()
     ]
 
-    first = errors[0]["message"] if errors else "Invalid request."
+    first = (
+        errors[0]["message"]
+        if errors
+        else "Invalid request."
+    )
 
     return JSONResponse(
-        # Spelled out rather than using the status constant, whose name
-        # changed between Starlette versions.
         status_code=422,
         content={
             "detail": first,
@@ -208,9 +246,8 @@ async def unhandled_exception_handler(
     """
     Last line of defence.
 
-    The real exception goes to the log with its request id; the caller gets a
-    generic message, because tracebacks from this service routinely carry API
-    keys, Mongo connection strings and upstream URLs.
+    The real exception goes to the log with its request id; the caller gets
+    a generic message.
     """
 
     logger.exception(
@@ -233,7 +270,22 @@ async def unhandled_exception_handler(
 # ROUTES
 # ===============================
 
+# Existing medical routes
 app.include_router(router)
+
+# Doctor routes
+#
+# Example:
+# POST /api/v1/doctors
+#
+app.include_router(doctor_router)
+
+# Laboratory routes
+#
+# Example:
+# GET /api/v1/medical/laboratories/nearby
+#
+app.include_router(laboratory_router)
 
 
 # ===============================
@@ -251,11 +303,13 @@ def root():
 @app.get("/health", tags=["Health"])
 def health():
     """
-    Liveness only - deliberately says nothing about the configuration or the
-    models, since it is reachable without a token.
+    Liveness only - deliberately says nothing about the configuration
+    or the models, since it is reachable without a token.
     """
 
-    return {"status": "healthy"}
+    return {
+        "status": "healthy"
+    }
 
 
 @app.get("/health/ready", tags=["Health"])
@@ -263,8 +317,8 @@ def readiness():
     """
     Readiness: has the pipeline finished loading?
 
-    A load balancer should hold traffic until this returns 200, otherwise the
-    first requests land while the models are still coming up.
+    A load balancer should hold traffic until this returns 200, otherwise
+    the first requests land while the models are still coming up.
     """
 
     # get_application is lru_cache'd, so a populated cache means the load
@@ -277,5 +331,7 @@ def readiness():
             if ready
             else status.HTTP_503_SERVICE_UNAVAILABLE
         ),
-        content={"status": "ready" if ready else "loading"},
+        content={
+            "status": "ready" if ready else "loading"
+        },
     )
